@@ -1,0 +1,16 @@
+# Build-related
+build/
+gertils.egg-info/
+
+# Test-related
+.hypothesis/
+*__pycache__/
+.coverage
+
+# IDE-related
+.idea/
+.vscode/
+
+# Other
+.nox/
+
