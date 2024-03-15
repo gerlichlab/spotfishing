@@ -1,8 +1,5 @@
 """Tests about column names of spot tables"""
 
-import os
-from pathlib import Path
-
 import hypothesis as hyp
 import numpy as np
 import pandas as pd
@@ -14,16 +11,10 @@ from spotfishing.detectors import (
     ROI_CENTROID_COLUMN_RENAMING,
     SKIMAGE_REGIONPROPS_TABLE_COLUMNS_EXPANDED,
 )
+from helpers import load_image_file
 
 __author__ = "Vince Reuter"
-
-
-def get_img_data_file(fn: str) -> Path:
-    return Path(os.path.dirname(__file__)) / "data" / fn
-
-
-def load_image_file(fn: str) -> np.ndarray:
-    return np.load(get_img_data_file(fn))
+__credits__ = ["Vince Reuter"]
 
 
 # Generators for dummy numpy arrays to use as input in test cases
