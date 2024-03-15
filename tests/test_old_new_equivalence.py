@@ -36,9 +36,8 @@ def get_img_data_file(fn: str) -> Path:
 def test_eqv(data_path, old_fun, new_fun, threshold, expand_px):
     data = np.load(data_path)
     old_table, _, _ = old_fun(data, threshold)
-    new_table, _, _ = new_fun(
-        input_image=data, spot_threshold=threshold, expand_px=expand_px
-    )
+    new_res = new_fun(input_image=data, spot_threshold=threshold, expand_px=expand_px)
+    new_table = new_res.table
     assert np.all(old_table.index == new_table.index)
     cols = ["zc", "yc", "xc", "area", "intensity_mean"]
     sub_cols = [c for c in cols if c != "area"]  # wasn't in DoG before
