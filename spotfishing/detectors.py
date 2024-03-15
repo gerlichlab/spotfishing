@@ -1,6 +1,6 @@
 """Different spot detection implementations"""
 
-from typing import TYPE_CHECKING, Optional, Tuple, Union
+from typing import Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -21,7 +21,7 @@ from .detection_result import (
 __author__ = "Vince Reuter"
 __credits__ = ["Vince Reuter", "Kai Sandoval Beckwith"]
 
-__all__ = ["detect_spots_dog", "detec_spots_int"]
+__all__ = ["detect_spots_dog", "detect_spots_int"]
 
 Numeric = Union[int, float]
 NumpyInt = Union[np.int8, np.int16, np.int32, np.int64]
