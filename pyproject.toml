@@ -49,10 +49,10 @@ optional = true
 hypothesis = "^6.68.2"
 mypy = "^0.991"
 nox = "^2022.11.21"
+pandas-stubs = "^2.2.0.240218"
 pydantic = "^1.10.4"
 pylint = "^2.15.8"
 pytest = "^7.1.0"
-types-setuptools = "^65.6.0.2" 
 
 [tool.poetry.group.format]
 optional = true
@@ -75,10 +75,10 @@ colorama = "^0.4.6"
 hypothesis = "^6.68.2"
 mypy = "^0.991"
 nox = "^2022.11.21"
+pandas-stubs = "^2.2.0.240218"
 pydantic = "^1.10.4"
 pylint = "^2.15.8"
 pytest = "^7.1.0"
-types-setuptools = "^65.6.0.2"
 
 [tool.black]
 target-version = ["py310"]
