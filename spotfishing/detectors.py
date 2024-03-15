@@ -24,8 +24,8 @@ __credits__ = ["Vince Reuter", "Kai Sandoval Beckwith"]
 __all__ = ["detect_spots_dog", "detec_spots_int"]
 
 Numeric = Union[int, float]
-NumpyInt = Union[np.int8, np.int16, np.int32, np.int64, np.int128, np.int256]
-NumpyFloat = Union[np.float16, np.float32, np.float64, np.float128, np.float256]
+NumpyInt = Union[np.int8, np.int16, np.int32, np.int64]
+NumpyFloat = Union[np.float16, np.float32, np.float64]
 PixelValue = Union[np.int8, np.int16]
 
 
