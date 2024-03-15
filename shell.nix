@@ -6,7 +6,8 @@
   dev ? true,
 }:
 let 
-  py310 = pkgs.python310.withPackages (ps: with ps; [ numpy pandas ]);
+  py310 = pkgs.python310;
+  py311 = pkgs.python311;
   poetryExtras = if dev then ["dev"] else [];
   poetryInstallExtras = (
     if poetryExtras == [] then ""
@@ -18,8 +19,7 @@ pkgs.mkShell {
   buildInputs = with pkgs; [
     poetry
     py310
-    python311
-    python312
+    py311
   ] ++ (if dev then [ pkgs.poetryPlugins.poetry-plugin-export ] else []);
   shellHook = ''
     # To get this working on the lab machine, we need to modify Poetry's keyring interaction:
