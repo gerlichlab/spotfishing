@@ -48,11 +48,13 @@ def install_groups(
         # See: https://python-poetry.org/blog/announcing-poetry-1.7.0/
         argv = [
             "poetry",
-            "config", 
+            "config",
             "warnings.export",
             "false",
         ]
-        session.debug(f"Running command to silence warning since in Nix shell we install the patch: {' '.join(argv)}")
+        session.debug(
+            f"Running command to silence warning since in Nix shell we install the patch: {' '.join(argv)}"
+        )
         session.run_always(*argv, external=True)
         session.log(f"Will generate requirements hashfile: {hashfile}")
         requirements_txt.parent.mkdir(parents=True, exist_ok=True)
