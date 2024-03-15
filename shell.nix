@@ -17,6 +17,8 @@ in
 pkgs.mkShell {
   name = "spotfishing-env";
   buildInputs = with pkgs; [
+    pkgs.zlib
+    pkgs.stdenv.cc.cc.lib
     poetry
     py310
     py311
@@ -27,6 +29,7 @@ pkgs.mkShell {
     # https://github.com/python-poetry/poetry/issues/1917
     export PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring
     poetry env use "${py310}/bin/python"
+    export LD_LIBRARY_PATH="${pkgs.zlib}/lib:${pkgs.stdenv.cc.cc.lib}/lib"
     poetry install -vv --sync${poetryInstallExtras}
     source "$(poetry env info --path)/bin/activate"
   '';
