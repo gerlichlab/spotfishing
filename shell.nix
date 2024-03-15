@@ -6,7 +6,7 @@
   dev ? true,
 }:
 let 
-  py310 = pkgs.python310;
+  py310 = pkgs.python310.withPackages (ps: with ps; [ numpy pandas ]);
   poetryExtras = if dev then ["dev"] else [];
   poetryInstallExtras = (
     if poetryExtras == [] then ""
