@@ -44,7 +44,7 @@ class DetectionResult:
     image : np.ndarray
         The image (after possibly some preprocessing) that was actually used in detection
     labels : np.ndarray
-        The labels for the detected ROIs
+        Array of the same size/shape as the image, with nonnegative integer entries; a zero indicates that the pixel isn't in an ROI, and a nonzero indicates the index of the ROI to which the pixel's been assigned
     """
 
     table: "pd.DataFrame"

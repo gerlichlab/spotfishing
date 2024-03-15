@@ -1,6 +1,6 @@
 """Different spot detection implementations"""
 
-from typing import Optional, Tuple, Union
+from typing import TYPE_CHECKING, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -24,11 +24,14 @@ __credits__ = ["Vince Reuter", "Kai Sandoval Beckwith"]
 __all__ = ["detect_spots_dog", "detec_spots_int"]
 
 Numeric = Union[int, float]
+NumpyInt = Union[np.int8, np.int16, np.int32, np.int64, np.int128, np.int256]
+NumpyFloat = Union[np.float16, np.float32, np.float64, np.float128, np.float256]
+PixelValue = Union[np.int8, np.int16]
 
 
 def detect_spots_dog(
     *, input_image, spot_threshold: Numeric, expand_px: Optional[Numeric]
-):
+) -> DetectionResult:
     """Spot detection by difference of Gaussians filter
 
     Arguments
@@ -57,7 +60,7 @@ def detect_spots_dog(
 
 def detect_spots_int(
     *, input_image, spot_threshold: Numeric, expand_px: Optional[Numeric]
-):
+) -> DetectionResult:
     """Spot detection by intensity filter
 
     Arguments
@@ -91,8 +94,8 @@ def detect_spots_int(
 
 
 def _build_props_table(
-    *, labels: np.ndarray, input_image: np.ndarray, expand_px: Optional[int]
-) -> Tuple[pd.DataFrame, np.ndarray]:
+    *, labels: np.ndarray[NumpyInt], input_image: np.ndarray[PixelValue], expand_px: Optional[int]
+) -> Tuple[pd.DataFrame, np.ndarray[NumpyInt]]:
     if expand_px:
         labels = expand_labels(labels, expand_px)
     if np.all(labels == 0):
@@ -116,7 +119,7 @@ def _build_props_table(
     return spot_props, labels
 
 
-def _check_input_image(img: np.ndarray) -> None:
+def _check_input_image(img: np.ndarray[PixelValue]) -> None:
     if not isinstance(img, np.ndarray):
         raise TypeError(
             f"Expected numpy array for input image but got {type(img).__name__}"
@@ -127,7 +130,7 @@ def _check_input_image(img: np.ndarray) -> None:
         )
 
 
-def _preprocess_for_difference_of_gaussians(input_image: np.ndarray) -> np.ndarray:
+def _preprocess_for_difference_of_gaussians(input_image: np.ndarray[PixelValue]) -> np.ndarray[PixelValue]:
     img = white_tophat(image=input_image, footprint=ball(2))
     img = gaussian(img, 0.8) - gaussian(img, 1.3)
     img = img / gaussian(input_image, 3)
