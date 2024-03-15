@@ -1,6 +1,6 @@
 """Different spot detection implementations"""
 
-from typing import Optional, Tuple, Union
+from typing import NoReturn, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -9,6 +9,8 @@ from skimage.filters import gaussian
 from skimage.measure import regionprops_table
 from skimage.morphology import ball, remove_small_objects, white_tophat
 from skimage.segmentation import expand_labels
+from .exceptions import DimensionalityError
+
 
 __author__ = "Vince Reuter"
 __credits__ = ["Vince Reuter", "Kai Sandoval Beckwith"]
@@ -20,7 +22,7 @@ Numeric = Union[int, float]
 CENTROID_COLUMNS_REMAPPING = {'centroid_weighted-0': 'zc', 'centroid_weighted-1': 'yc', 'centroid_weighted-2': 'xc'}
 
 
-def detect_spots_dog(*, input_image, spot_threshold: Numeric, expand_px: Optional[int] = 10):
+def detect_spots_dog(*, input_image, spot_threshold: Numeric, expand_px: Optional[Numeric]):
     """Spot detection by difference of Gaussians filter
 
     Arguments
@@ -29,10 +31,10 @@ def detect_spots_dog(*, input_image, spot_threshold: Numeric, expand_px: Optiona
         3D image in which to detect spots
     spot_threshold : int or float
         Minimum peak value after the DoG transformation to call a peak/spot
-    expand_px : int, optional
+    expand_px : float or int or NoneType
         Number of pixels by which to expand contiguous subregion, 
         up to point of overlap with neighboring subregion of image
-        
+    
     Returns
     -------
     pd.DataFrame, np.ndarray, np.ndarray: 
@@ -42,22 +44,23 @@ def detect_spots_dog(*, input_image, spot_threshold: Numeric, expand_px: Optiona
         retained (bigger than threshold number of pixels), 
         and dilated by expansion amount (possibly)
     """
+    _check_input_image(input_image)
     img = _preprocess_for_difference_of_gaussians(input_image)
     labels, _ = ndi.label(img > spot_threshold)
     spot_props, labels = _build_props_table(labels=labels, input_image=input_image, expand_px=expand_px)
     return spot_props, img, labels
 
 
-def detect_spots_int(*, input_image, spot_threshold: Numeric, expand_px: Optional[int] = 1):
+def detect_spots_int(*, input_image, spot_threshold: Numeric, expand_px: Optional[Numeric]):
     """Spot detection by intensity filter
 
     Arguments
     ---------
-    img : ndarray
-        Input 3D image
+    input_image : ndarray
+        3D image in which to detect spots
     spot_threshold : NumberLike
-        Threshold to use for spots
-    expand_px : int
+        Minimum intensity value in a pixel to consider it as part of a spot region
+    expand_px : float or int or NoneType
         Number of pixels by which to expand contiguous subregion, 
         up to point of overlap with neighboring subregion of image
         
@@ -72,7 +75,7 @@ def detect_spots_int(*, input_image, spot_threshold: Numeric, expand_px: Optiona
     """
     # TODO: enforce that output column names don't vary with code path walked.
     # See: https://github.com/gerlichlab/looptrace/issues/125
-
+    _check_input_image(input_image)
     binary = input_image > spot_threshold
     binary = ndi.binary_fill_holes(binary)
     struct = ndi.generate_binary_structure(input_image.ndim, 2)
@@ -100,6 +103,13 @@ def _build_props_table(*, labels: np.ndarray, input_image: np.ndarray, expand_px
     spot_props = spot_props.rename(columns=CENTROID_COLUMNS_REMAPPING)
     spot_props = spot_props.reset_index(drop=True)
     return spot_props, labels
+
+
+def _check_input_image(img: np.ndarray) -> NoReturn:
+    if not isinstance(img, np.ndarray):
+        raise TypeError(f"Expected numpy array for input image but got {type(img).__name__}")
+    if img.ndim != 3:
+        raise DimensionalityError(f"Expected 3D input image but got {img.ndim}-dimensional")
 
 
 def _preprocess_for_difference_of_gaussians(input_image: np.ndarray) -> np.ndarray:

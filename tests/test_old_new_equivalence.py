@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 
 from spotfishing.deprecated import detect_spots_int_old, detect_spots_dog_old
-from spotfishing.detectors import detect_spots_int, detect_spots_dog
+from spotfishing import detect_spots_int, detect_spots_dog
 
 OLD_PIXEL_EXPANSION_INT = 1
 OLD_PIXEL_EXPANSION_DOG = 10
