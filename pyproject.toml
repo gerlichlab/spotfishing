@@ -47,12 +47,13 @@ optional = true
 
 [tool.poetry.group.lint.dependencies]
 hypothesis = "^6.68.2"
+mypy = "^1.9.0"
 nox = "^2022.11.21"
 pandas-stubs = "^2.2.0.240218"
 pydantic = "^1.10.4"
 pylint = "^2.15.8"
-pyright = "^1.1.354"
 pytest = "^7.1.0"
+python-type-stubs = { git = "https://github.com/gerlichlab/python-type-stubs.git", branch = "main" }
 
 [tool.poetry.group.format]
 optional = true
@@ -73,12 +74,13 @@ black = "^22"
 codespell = "^2.2.2"
 colorama = "^0.4.6"
 hypothesis = "^6.68.2"
+mypy = "^1.9.0"
 nox = "^2022.11.21"
 pandas-stubs = "^2.2.0.240218"
 pydantic = "^1.10.4"
 pylint = "^2.15.8"
-pyright = "^1.1.354"
 pytest = "^7.1.0"
+python-type-stubs = { git = "https://github.com/gerlichlab/python-type-stubs.git", branch = "main" }
 
 [tool.black]
 target-version = ["py310"]
@@ -93,20 +95,32 @@ uri-ignore-words-list = "*" # prevent spelling correction in URL-like values.
 [tool.isort]
 profile = "black"
 
+[tool.mypy]
+files = ['*.py', 'spotfishing/*.py', 'tests/*.py']
+plugins = ["pydantic.mypy"]
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_return_any = true
+warn_unreachable = true
+
+[[tool.mypy.overrides]]
+module = "spotfishing.*"
+disallow_untyped_defs = true
+disallow_untyped_calls = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_any_unimported = true
+disallow_any_explicit = true
+disallow_any_generics = true
+disallow_subclassing_any = true
+implicit_optional = false
+strict_optional = true
+
 [tool.pylint]
 main.jobs = 4
 main.py-version = "3.10"
 reports.output-format = "colorized"
 "messages control".disable = "logging-fstring-interpolation,unspecified-encoding,wildcard-import,unused-wildcard-import"
-
-[tool.pyright]
-ignore = ['./spotfishing/deprecated.py']
-include = ['*.py', './spotfishing/*.py', './tests/*.py']
-reportMissingTypeStubs = true
-reportPropertyTypeMismatch = true
-reportUnusedClass = true
-reportUnusedImport = true
-reportUnusedFunction = true
 
 [build-system]
 requires = ["poetry-core"]
