@@ -97,6 +97,7 @@ profile = "black"
 
 [tool.mypy]
 files = ['*.py', 'spotfishing/*.py', 'tests/*.py']
+exclude = ['^deprecated\.py$']
 plugins = ["pydantic.mypy"]
 warn_redundant_casts = true
 warn_unused_ignores = true

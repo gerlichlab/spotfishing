@@ -4,11 +4,12 @@ import dataclasses
 from typing import TYPE_CHECKING, Iterable
 
 if TYPE_CHECKING:
-    import numpy as np
+    import numpy.typing as npt
     import pandas as pd
 
 from ._constants import *
 from ._exceptions import DimensionalityError
+from ._numeric_types import *
 
 __author__ = "Vince Reuter"
 __all__ = ["DetectionResult"]
@@ -48,12 +49,12 @@ class DetectionResult:
     """
 
     table: "pd.DataFrame"
-    image: "np.ndarray"
-    labels: "np.ndarray"
+    image: "npt.NDArray[PixelValue]"
+    labels: "npt.NDArray[NumpyInt]"
 
     def __post_init__(self) -> None:
         """Validate that the structure and values of the inputs are as required."""
-        errors = []
+        errors: list[Exception] = []
         cols = list(self.table.columns)
         if cols != DETECTION_RESULT_TABLE_COLUMNS:
             errors.append(IllegalDetectionResultTableColumns(observed_columns=cols))

@@ -1,17 +1,21 @@
 """Different spot detection implementations"""
 
-from typing import Optional, Tuple, Union
+from typing import TYPE_CHECKING, Optional, Tuple, Union
 
 import numpy as np
+
+if TYPE_CHECKING:
+    import numpy.typing as npt
 import pandas as pd
 from scipy import ndimage as ndi
-from skimage.filters import gaussian
+from skimage.filters import gaussian  # type: ignore[import-untyped]
 from skimage.measure import regionprops_table
 from skimage.morphology import ball, remove_small_objects, white_tophat
-from skimage.segmentation import expand_labels
+from skimage.segmentation import expand_labels  # type: ignore[import-untyped]
 
 from ._constants import *
 from ._exceptions import DimensionalityError
+from ._numeric_types import *
 from .detection_result import (
     ROI_CENTROID_COLUMN_RENAMING,
     SKIMAGE_REGIONPROPS_TABLE_COLUMNS_EXPANDED,
@@ -24,13 +28,13 @@ __credits__ = ["Vince Reuter", "Kai Sandoval Beckwith"]
 __all__ = ["detect_spots_dog", "detect_spots_int"]
 
 Numeric = Union[int, float]
-NumpyInt = Union[np.int8, np.int16, np.int32, np.int64]
-NumpyFloat = Union[np.float16, np.float32, np.float64]
-PixelValue = Union[np.int8, np.int16]
 
 
 def detect_spots_dog(
-    *, input_image, spot_threshold: Numeric, expand_px: Optional[Numeric]
+    *,
+    input_image: npt.NDArray[PixelValue],
+    spot_threshold: Numeric,
+    expand_px: Optional[Numeric],
 ) -> DetectionResult:
     """Spot detection by difference of Gaussians filter
 
@@ -51,7 +55,7 @@ def detect_spots_dog(
     """
     _check_input_image(input_image)
     img = _preprocess_for_difference_of_gaussians(input_image)
-    labels, _ = ndi.label(img > spot_threshold)
+    labels, _ = ndi.label(img > spot_threshold)  # type: ignore[no-untyped-call]
     spot_props, labels = _build_props_table(
         labels=labels, input_image=input_image, expand_px=expand_px
     )
@@ -59,7 +63,10 @@ def detect_spots_dog(
 
 
 def detect_spots_int(
-    *, input_image, spot_threshold: Numeric, expand_px: Optional[Numeric]
+    *,
+    input_image: npt.NDArray[PixelValue],
+    spot_threshold: Numeric,
+    expand_px: Optional[Numeric],
 ) -> DetectionResult:
     """Spot detection by intensity filter
 
@@ -82,9 +89,9 @@ def detect_spots_int(
     # See: https://github.com/gerlichlab/looptrace/issues/125
     _check_input_image(input_image)
     binary = input_image > spot_threshold
-    binary = ndi.binary_fill_holes(binary)
-    struct = ndi.generate_binary_structure(input_image.ndim, 2)
-    labels, num_obj = ndi.label(binary, structure=struct)
+    binary = ndi.binary_fill_holes(binary)  # type: ignore[no-untyped-call]
+    struct = ndi.generate_binary_structure(input_image.ndim, 2)  # type: ignore[no-untyped-call]
+    labels, num_obj = ndi.label(binary, structure=struct)  # type: ignore[no-untyped-call]
     if num_obj > 1:
         labels = remove_small_objects(labels, min_size=5)
     spot_props, labels = _build_props_table(
@@ -94,32 +101,36 @@ def detect_spots_int(
 
 
 def _build_props_table(
-    *, labels: np.ndarray[NumpyInt], input_image: np.ndarray[PixelValue], expand_px: Optional[int]
-) -> Tuple[pd.DataFrame, np.ndarray[NumpyInt]]:
+    *,
+    labels: npt.NDArray[NumpyInt],
+    input_image: npt.NDArray[PixelValue],
+    expand_px: Optional[Numeric],
+) -> Tuple[pd.DataFrame, npt.NDArray[NumpyInt]]:
     if expand_px:
         labels = expand_labels(labels, expand_px)
     if np.all(labels == 0):
         # No substructures (ROIs) exist.
         spot_props = pd.DataFrame(columns=SKIMAGE_REGIONPROPS_TABLE_COLUMNS_EXPANDED)
     else:
-        spot_props = regionprops_table(
-            label_image=labels,
-            intensity_image=input_image,
-            properties=(
-                ROI_LABEL_KEY,
-                ROI_CENTROID_KEY,
-                ROI_AREA_KEY,
-                ROI_MEAN_INTENSITY_KEY,
-            ),
+        spot_props = pd.DataFrame(
+            regionprops_table(
+                label_image=labels,
+                intensity_image=input_image,
+                properties=(
+                    ROI_LABEL_KEY,
+                    ROI_CENTROID_KEY,
+                    ROI_AREA_KEY,
+                    ROI_MEAN_INTENSITY_KEY,
+                ),
+            )
         )
-        spot_props = pd.DataFrame(spot_props)
     spot_props = spot_props.drop(["label"], axis=1, errors="ignore")
     spot_props = spot_props.rename(columns=dict(ROI_CENTROID_COLUMN_RENAMING))
     spot_props = spot_props.reset_index(drop=True)
     return spot_props, labels
 
 
-def _check_input_image(img: np.ndarray[PixelValue]) -> None:
+def _check_input_image(img: npt.NDArray[PixelValue]) -> None:
     if not isinstance(img, np.ndarray):
         raise TypeError(
             f"Expected numpy array for input image but got {type(img).__name__}"
@@ -130,9 +141,11 @@ def _check_input_image(img: np.ndarray[PixelValue]) -> None:
         )
 
 
-def _preprocess_for_difference_of_gaussians(input_image: np.ndarray[PixelValue]) -> np.ndarray[PixelValue]:
+def _preprocess_for_difference_of_gaussians(
+    input_image: npt.NDArray[PixelValue],
+) -> npt.NDArray[PixelValue]:
     img = white_tophat(image=input_image, footprint=ball(2))
     img = gaussian(img, 0.8) - gaussian(img, 1.3)
     img = img / gaussian(input_image, 3)
     img = (img - np.mean(img)) / np.std(img)
-    return img
+    return img  # type: ignore[no-any-return]
