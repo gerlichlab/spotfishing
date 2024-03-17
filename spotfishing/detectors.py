@@ -30,8 +30,8 @@ Numeric = Union[int, float]
 
 
 def detect_spots_dog(
-    *,
     input_image: npt.NDArray[PixelValue],
+    *,
     spot_threshold: Numeric,
     expand_px: Optional[Numeric],
 ) -> DetectionResult:
@@ -62,8 +62,8 @@ def detect_spots_dog(
 
 
 def detect_spots_int(
-    *,
     input_image: npt.NDArray[PixelValue],
+    *,
     spot_threshold: Numeric,
     expand_px: Optional[Numeric],
 ) -> DetectionResult:

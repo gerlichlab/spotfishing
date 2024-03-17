@@ -45,12 +45,12 @@ def test_output_is_correct_with_original_settings(
 
     arr_name = f"img__{data_name}__smaller.npy"
     input_image = load_image_file(arr_name)
-    obs = detect(input_image=input_image, spot_threshold=threshold, expand_px=expand_px)
+    obs = detect(input_image, spot_threshold=threshold, expand_px=expand_px)
     obs_table = obs.table[COLUMNS_OF_INTEREST]
 
     print("EXPECTED (below):")
     print(exp_table)
     print("OBSERVED (below):")
     print(obs_table)
-    
+
     assert_frame_equal(obs_table, exp_table)

@@ -8,10 +8,6 @@ from helpers import load_image_file
 
 from spotfishing import DimensionalityError, detect_spots_dog, detect_spots_int
 from spotfishing.detection_result import DETECTION_RESULT_TABLE_COLUMNS
-from spotfishing.detectors import (
-    ROI_CENTROID_COLUMN_RENAMING,
-    SKIMAGE_REGIONPROPS_TABLE_COLUMNS_EXPANDED,
-)
 
 __author__ = "Vince Reuter"
 __credits__ = ["Vince Reuter"]
@@ -46,9 +42,7 @@ def test_spot_table_columns__are_always_as_expected(
     pixel_expansion,
     input_image,
 ):
-    result = detect(
-        input_image=input_image, spot_threshold=threshold, expand_px=pixel_expansion
-    )
+    result = detect(input_image, spot_threshold=threshold, expand_px=pixel_expansion)
     observed_columns = list(result.table.columns)
     assert isinstance(result.table, pd.DataFrame)
     assert observed_columns == DETECTION_RESULT_TABLE_COLUMNS
@@ -60,9 +54,7 @@ def test_spot_table_columns__are_always_as_expected(
 )
 def test_simple_intensity_detector_result_always_contains_original_image(input_image):
     detect, threshold, pixel_expansion = BASE_INTENSITY_BUNDLE
-    result = detect(
-        input_image=input_image, spot_threshold=threshold, expand_px=pixel_expansion
-    )
+    result = detect(input_image, spot_threshold=threshold, expand_px=pixel_expansion)
     assert np.all(result.image == input_image)
 
 
@@ -106,7 +98,5 @@ def test_detectors_give_proper_error_for_bad_input_image(
     expected_message,
 ):
     with pytest.raises(expected_error_type) as err_ctx:
-        detect(
-            input_image=input_image, spot_threshold=threshold, expand_px=pixel_expansion
-        )
+        detect(input_image, spot_threshold=threshold, expand_px=pixel_expansion)
     assert str(err_ctx.value) == expected_message
