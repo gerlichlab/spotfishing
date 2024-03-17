@@ -1,6 +1,7 @@
 """Aliases for numeric types"""
 
 from typing import Union
+
 import numpy as np
 
 __author__ = "Vince Reuter"

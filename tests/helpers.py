@@ -2,8 +2,8 @@
 
 import os
 from pathlib import Path
-import numpy as np
 
+import numpy as np
 
 __author__ = "Vince Reuter"
 __credits__ = ["Vince Reuter"]

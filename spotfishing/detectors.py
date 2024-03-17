@@ -1,11 +1,9 @@
 """Different spot detection implementations"""
 
-from typing import TYPE_CHECKING, Optional, Tuple, Union
+from typing import Optional, Tuple, Union
 
 import numpy as np
-
-if TYPE_CHECKING:
-    import numpy.typing as npt
+import numpy.typing as npt
 import pandas as pd
 from scipy import ndimage as ndi
 from skimage.filters import gaussian  # type: ignore[import-untyped]
@@ -18,6 +16,7 @@ from ._exceptions import DimensionalityError
 from ._numeric_types import *
 from .detection_result import (
     ROI_CENTROID_COLUMN_RENAMING,
+    ROI_MEASUREMENT_KEYS,
     SKIMAGE_REGIONPROPS_TABLE_COLUMNS_EXPANDED,
     DetectionResult,
 )
@@ -116,11 +115,8 @@ def _build_props_table(
             regionprops_table(
                 label_image=labels,
                 intensity_image=input_image,
-                properties=(
-                    ROI_LABEL_KEY,
-                    ROI_CENTROID_KEY,
-                    ROI_AREA_KEY,
-                    ROI_MEAN_INTENSITY_KEY,
+                properties=tuple(
+                    [ROI_LABEL_KEY, ROI_CENTROID_KEY] + ROI_MEASUREMENT_KEYS
                 ),
             )
         )

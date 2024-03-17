@@ -3,11 +3,10 @@ from pathlib import Path
 
 import numpy as np
 import pytest
+from helpers import load_image_file
 
 from spotfishing import detect_spots_dog, detect_spots_int
 from spotfishing.deprecated import detect_spots_dog_old, detect_spots_int_old
-
-from helpers import load_image_file
 
 OLD_PIXEL_EXPANSION_INT = 1
 OLD_PIXEL_EXPANSION_DOG = 10

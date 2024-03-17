@@ -4,6 +4,7 @@ import hypothesis as hyp
 import numpy as np
 import pandas as pd
 import pytest
+from helpers import load_image_file
 
 from spotfishing import DimensionalityError, detect_spots_dog, detect_spots_int
 from spotfishing.detection_result import DETECTION_RESULT_TABLE_COLUMNS
@@ -11,7 +12,6 @@ from spotfishing.detectors import (
     ROI_CENTROID_COLUMN_RENAMING,
     SKIMAGE_REGIONPROPS_TABLE_COLUMNS_EXPANDED,
 )
-from helpers import load_image_file
 
 __author__ = "Vince Reuter"
 __credits__ = ["Vince Reuter"]
