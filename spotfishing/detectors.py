@@ -1,15 +1,17 @@
 """Different spot detection implementations"""
 
+from dataclasses import dataclass
 from typing import Optional, Tuple, Union
 
 import numpy as np
 import numpy.typing as npt
 import pandas as pd
+from numpydoc_decorator import doc  # type: ignore[import-untyped]
 from scipy import ndimage as ndi
-from skimage.filters import gaussian  # type: ignore[import-untyped]
 from skimage.measure import regionprops_table
-from skimage.morphology import ball, remove_small_objects, white_tophat
+from skimage.morphology import remove_small_objects
 from skimage.segmentation import expand_labels  # type: ignore[import-untyped]
+from typing_extensions import Annotated, Doc
 
 from ._constants import *
 from ._exceptions import DimensionalityError
@@ -20,40 +22,63 @@ from .detection_result import (
     SKIMAGE_REGIONPROPS_TABLE_COLUMNS_EXPANDED,
     DetectionResult,
 )
+from .dog_transform import DifferenceOfGaussiansTransformation
 
 __author__ = "Vince Reuter"
 __credits__ = ["Vince Reuter", "Kai Sandoval Beckwith"]
 
 __all__ = ["detect_spots_dog", "detect_spots_int"]
 
+Image = npt.NDArray[PixelValue]
 Numeric = Union[int, float]
 
 
+@doc(summary="Parameter descriptions common to various spot detection procedures")
+@dataclass
+class detection_signature:
+    image = Annotated[npt.NDArray[PixelValue], Doc("3D image in which to detect spots")]
+    threshold = Annotated[
+        Numeric,
+        Doc(
+            "The minimum (after any transformations) pixel value required to regard a pixel as part of a spot"
+        ),
+    ]
+    expand_px = Annotated[
+        Optional[Numeric],
+        Doc("The number of pixels by which to expand a detected and defined region"),
+    ]
+    result = Annotated[
+        DetectionResult,
+        Doc(
+            "Bundle of table of ROI coordinates and data, the image used for spot detection, and region labels array"
+        ),
+    ]
+
+
+@doc(
+    summary="Detect spots by difference of Gaussians filter.",
+    parameters=dict(
+        transform="The subtraction-after-smoothing parameterisation that defined DoG",
+    ),
+    raises=dict(
+        TypeError="If the given `transform` isn't specifically a `DifferenceOfGaussiansTransformation`",
+    ),
+)
 def detect_spots_dog(
-    input_image: npt.NDArray[PixelValue],
+    input_image: detection_signature.image,
     *,
-    spot_threshold: Numeric,
-    expand_px: Optional[Numeric],
-) -> DetectionResult:
-    """Spot detection by difference of Gaussians filter
-
-    Arguments
-    ---------
-    input_image : ndarray
-        3D image in which to detect spots
-    spot_threshold : int or float
-        Minimum peak value after the DoG transformation to call a peak/spot
-    expand_px : float or int or NoneType
-        Number of pixels by which to expand contiguous subregion,
-        up to point of overlap with neighboring subregion of image
-
-    Returns
-    -------
-    spotfishing.DetectionResult
-        Bundle of table of ROI coordinates and data, the image used for spot detection, and region labels array
-    """
+    spot_threshold: detection_signature.threshold,
+    expand_px: detection_signature.expand_px,
+    transform: DifferenceOfGaussiansTransformation,
+) -> detection_signature.result:
+    # TODO: consider replacing by something from scikit-image.
+    # See: https://github.com/gerlichlab/spotfishing/issues/5
     _check_input_image(input_image)
-    img = _preprocess_for_difference_of_gaussians(input_image)
+    if not isinstance(transform, DifferenceOfGaussiansTransformation):
+        raise TypeError(
+            f"For DoG-based detection, the transformation must be of type {DifferenceOfGaussiansTransformation.__name__}; got {type(transform).__name__}"
+        )
+    img = transform(input_image)
     labels, _ = ndi.label(img > spot_threshold)  # type: ignore[no-untyped-call]
     spot_props, labels = _build_props_table(
         labels=labels, input_image=input_image, expand_px=expand_px
@@ -61,38 +86,24 @@ def detect_spots_dog(
     return DetectionResult(table=spot_props, image=img, labels=labels)
 
 
+@doc(
+    summary="Detect spots by a simply pixel value threshold.",
+    raises=dict(
+        TypeError="If the given `transform` isn't specifically a `DifferenceOfGaussiansTransformation`",
+    ),
+)
 def detect_spots_int(
-    input_image: npt.NDArray[PixelValue],
+    input_image: detection_signature.image,
     *,
-    spot_threshold: Numeric,
-    expand_px: Optional[Numeric],
-) -> DetectionResult:
-    """Spot detection by intensity filter
-
-    Arguments
-    ---------
-    input_image : ndarray
-        3D image in which to detect spots
-    spot_threshold : NumberLike
-        Minimum intensity value in a pixel to consider it as part of a spot region
-    expand_px : float or int or NoneType
-        Number of pixels by which to expand contiguous subregion,
-        up to point of overlap with neighboring subregion of image
-
-    Returns
-    -------
-    spotfishing.DetectionResult
-        Bundle of table of ROI coordinates and data, the image used for spot detection, and region labels array
-    """
-    # TODO: enforce that output column names don't vary with code path walked.
-    # See: https://github.com/gerlichlab/looptrace/issues/125
+    spot_threshold: detection_signature.threshold,
+    expand_px: detection_signature.expand_px,
+) -> detection_signature.result:
     _check_input_image(input_image)
     binary = input_image > spot_threshold
     binary = ndi.binary_fill_holes(binary)  # type: ignore[no-untyped-call]
     struct = ndi.generate_binary_structure(input_image.ndim, 2)  # type: ignore[no-untyped-call]
     labels, num_obj = ndi.label(binary, structure=struct)  # type: ignore[no-untyped-call]
-    if num_obj > 1:
-        labels = remove_small_objects(labels, min_size=5)
+    labels = remove_small_objects(labels, min_size=5) if num_obj > 1 else labels
     spot_props, labels = _build_props_table(
         labels=labels, input_image=input_image, expand_px=expand_px
     )
@@ -135,13 +146,3 @@ def _check_input_image(img: npt.NDArray[PixelValue]) -> None:
         raise DimensionalityError(
             f"Expected 3D input image but got {img.ndim}-dimensional"
         )
-
-
-def _preprocess_for_difference_of_gaussians(
-    input_image: npt.NDArray[PixelValue],
-) -> npt.NDArray[PixelValue]:
-    img = white_tophat(image=input_image, footprint=ball(2))
-    img = gaussian(img, 0.8) - gaussian(img, 1.3)
-    img = img / gaussian(input_image, 3)
-    img = (img - np.mean(img)) / np.std(img)
-    return img  # type: ignore[no-any-return]

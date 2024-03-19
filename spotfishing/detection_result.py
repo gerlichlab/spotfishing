@@ -1,7 +1,9 @@
 """Abstraction over the result of application of a spot detection procedure to an input image"""
 
-import dataclasses
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Iterable
+
+from numpydoc_decorator import doc  # type: ignore[import-untyped]
 
 if TYPE_CHECKING:
     import numpy.typing as npt
@@ -39,21 +41,16 @@ DETECTION_RESULT_TABLE_COLUMNS = [
 ]
 
 
-@dataclasses.dataclass(frozen=True)
+@doc(
+    summary="The result of applying spot detection to an input image",
+    parameters=dict(
+        table="A table of detected spot coordinates and measurements",
+        image="The image (after possibly some preprocessing) that was actually used in detection",
+        labels="Array of the same size/shape as the image, with nonnegative integer entries; a zero indicates that the pixel isn't in an ROI, and a nonzero indicates the index of the ROI to which the pixel's been assigned",
+    ),
+)
+@dataclass(frozen=True, kw_only=True)
 class DetectionResult:
-    """
-    The result of applying spot detection to an input image
-
-    Parameters
-    ----------
-    table : pd.DataFrame
-        The table of detected spot coordinates and measurements
-    image : np.ndarray
-        The image (after possibly some preprocessing) that was actually used in detection
-    labels : np.ndarray
-        Array of the same size/shape as the image, with nonnegative integer entries; a zero indicates that the pixel isn't in an ROI, and a nonzero indicates the index of the ROI to which the pixel's been assigned
-    """
-
     table: "pd.DataFrame"
     image: "npt.NDArray[PixelValue]"
     labels: "npt.NDArray[NumpyInt]"

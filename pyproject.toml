@@ -17,14 +17,16 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Bio-Informatics",    
     "Typing :: Typed",
 ]
+include = ["examples"]
 
 [tool.poetry.dependencies]
 # These are the main runtime dependencies.
-python = "^3.10.0"
+python = ">= 3.10.0, < 3.13"
 numpy = [
     {version = "^1.24.2", python = "<3.12"},
     {version = "^1.25", python = ">=3.12"}
 ]
+numpydoc_decorator = { git = "https://github.com/alimanfoo/numpydoc_decorator.git", branch = "main" }
 pandas = "^1.5.3"
 scikit-image = "^0.20.0"
 scipy = "^1.10.1"
