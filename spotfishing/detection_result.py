@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 from ._constants import *
 from ._exceptions import DimensionalityError
-from ._numeric_types import *
+from ._types import *
 
 __author__ = "Vince Reuter"
 __all__ = ["DetectionResult"]

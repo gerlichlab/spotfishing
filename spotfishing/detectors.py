@@ -15,7 +15,7 @@ from typing_extensions import Annotated, Doc
 
 from ._constants import *
 from ._exceptions import DimensionalityError
-from ._numeric_types import *
+from ._types import *
 from .detection_result import (
     ROI_CENTROID_COLUMN_RENAMING,
     ROI_MEASUREMENT_KEYS,
@@ -29,12 +29,11 @@ __credits__ = ["Vince Reuter", "Kai Sandoval Beckwith"]
 
 __all__ = ["detect_spots_dog", "detect_spots_int"]
 
-Image = npt.NDArray[PixelValue]
 Numeric = Union[int, float]
 
 
 @doc(summary="Parameter descriptions common to various spot detection procedures")
-@dataclass
+@dataclass(frozen=True)
 class detection_signature:
     image = Annotated[npt.NDArray[PixelValue], Doc("3D image in which to detect spots")]
     threshold = Annotated[

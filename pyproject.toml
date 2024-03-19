@@ -52,7 +52,6 @@ hypothesis = "^6.68.2"
 mypy = "^1.9.0"
 nox = "^2022.11.21"
 pandas-stubs = "^2.2.0.240218"
-pydantic = "^1.10.4"
 pylint = "^2.15.8"
 pytest = "^7.1.0"
 python-type-stubs = { git = "https://github.com/gerlichlab/python-type-stubs.git", branch = "main" }
@@ -79,7 +78,6 @@ hypothesis = "^6.68.2"
 mypy = "^1.9.0"
 nox = "^2022.11.21"
 pandas-stubs = "^2.2.0.240218"
-pydantic = "^1.10.4"
 pylint = "^2.15.8"
 pytest = "^7.1.0"
 python-type-stubs = { git = "https://github.com/gerlichlab/python-type-stubs.git", branch = "main" }
@@ -98,16 +96,17 @@ uri-ignore-words-list = "*" # prevent spelling correction in URL-like values.
 profile = "black"
 
 [tool.mypy]
-files = ['*.py', 'spotfishing/*.py', 'tests/*.py']
-exclude = ['^deprecated\.py$']
-plugins = ["pydantic.mypy"]
+files = ['*.py', 'spotfishing/*.py', 'spotfishing_looptrace/*.py', 'tests/*.py']
 warn_redundant_casts = true
 warn_unused_ignores = true
 warn_return_any = true
 warn_unreachable = true
 
 [[tool.mypy.overrides]]
-module = "spotfishing.*"
+module = [
+    "spotfishing.*",
+    "spotfishing_looptrace.*"
+]
 disallow_untyped_defs = true
 disallow_untyped_calls = true
 disallow_incomplete_defs = true
@@ -123,7 +122,7 @@ strict_optional = true
 main.jobs = 4
 main.py-version = "3.10"
 reports.output-format = "colorized"
-"messages control".disable = "logging-fstring-interpolation,unspecified-encoding,wildcard-import,unused-wildcard-import"
+"messages control".disable = "logging-fstring-interpolation,unspecified-encoding,wildcard-import"
 
 [build-system]
 requires = ["poetry-core"]

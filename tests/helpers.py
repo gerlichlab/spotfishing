@@ -5,16 +5,14 @@ from pathlib import Path
 from typing import Union
 
 import numpy as np
-from skimage.morphology import ball, white_tophat
 
-from spotfishing import DifferenceOfGaussiansTransformation as DogTransform
-from spotfishing.dog_transform import ImageEndomorphism, ImageMorphism21, div_by_gauss
+from spotfishing_looptrace import DifferenceOfGaussiansSpecificationForLooptrace
 
 __author__ = "Vince Reuter"
 __credits__ = ["Vince Reuter"]
 
 __all__ = [
-    "ORIGINAL_TRANSFORM",
+    "ORIGINAL_SPECIFICATION",
     "get_img_data_file",
     "load_image_file",
 ]
@@ -23,11 +21,11 @@ Numeric = Union[float, int]
 
 
 # original parameterisation of the transformation for detection with DoG
-ORIGINAL_TRANSFORM = DogTransform(
-    pre_diff=ImageEndomorphism(white_tophat, dict(footprint=ball(2))),
+ORIGINAL_SPECIFICATION = DifferenceOfGaussiansSpecificationForLooptrace(
+    apply_white_tophat=True,
     sigma_narrow=0.8,
     sigma_wide=1.3,
-    post_diff=ImageMorphism21(div_by_gauss, dict(sigma=3)),
+    sigma_post_divide=3,
     standardise=True,
 )
 
