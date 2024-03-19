@@ -509,6 +509,24 @@ files = [
 ]
 
 [[package]]
+name = "numpydoc-decorator"
+version = "0.0.0"
+description = ""
+optional = false
+python-versions = ">=3.9,<3.13"
+files = []
+develop = false
+
+[package.dependencies]
+typing_extensions = "*"
+
+[package.source]
+type = "git"
+url = "https://github.com/alimanfoo/numpydoc_decorator.git"
+reference = "main"
+resolved_reference = "a9cbb0a29544788bbfd83ed47082e3442d9e5364"
+
+[[package]]
 name = "packaging"
 version = "24.0"
 description = "Core utilities for Python packages"
@@ -1162,5 +1180,5 @@ files = [
 
 [metadata]
 lock-version = "2.0"
-python-versions = "^3.10.0"
-content-hash = "5aff3846f7e83945d2c678ae0c6f098e378ab0155a851509f0eff486448dce57"
+python-versions = ">= 3.10.0, < 3.13"
+content-hash = "75aeae2c872a6a04b97e25bb1cab53e44491f267e909808db0407e0cd125f4bc"
