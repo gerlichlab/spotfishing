@@ -1,6 +1,7 @@
 """Abstraction over the result of application of a spot detection procedure to an input image"""
 
 from dataclasses import dataclass
+from enum import Enum
 from typing import TYPE_CHECKING, Iterable
 
 from numpydoc_decorator import doc  # type: ignore[import-untyped]
@@ -17,13 +18,20 @@ __author__ = "Vince Reuter"
 __all__ = ["DetectionResult"]
 
 
-# column names corresponding to the coordinates of the ROI centroid
-ROI_CENTER_KEYS = ["zc", "yc", "xc"]
+class RoiCenterKeys(Enum):
+    Z = "zc"
+    Y = "yc"
+    X = "xc"
+
+    @classmethod
+    def to_list(cls) -> list[str]:
+        return [m.value for m in cls]
+
 
 # how to rename columns arising from extraction from skimage.measure.regionprops_table, to better suit downstream analysis
 # TODO: consider making this configurable, see: https://github.com/gerlichlab/spotfishing/issues/1
 ROI_CENTROID_COLUMN_RENAMING = tuple(
-    (f"{ROI_CENTROID_KEY}-{i}", c) for i, c in enumerate(ROI_CENTER_KEYS)
+    (f"{ROI_CENTROID_KEY}-{i}", c) for i, c in enumerate(RoiCenterKeys.to_list())
 )
 
 # fields to pull from skimage.measure.regionprops_table result, besides centroid coordinates and label
