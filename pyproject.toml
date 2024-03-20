@@ -17,6 +17,10 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Bio-Informatics",    
     "Typing :: Typed",
 ]
+packages = [
+    { include = "spotfishing" }, 
+    { include = "spotfishing_looptrace" }
+]
 include = ["examples"]
 
 [tool.poetry.dependencies]
