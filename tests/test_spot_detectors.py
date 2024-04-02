@@ -61,7 +61,7 @@ def test_spot_table_columns__are_always_as_expected(
 def test_simple_intensity_detector_result_always_contains_original_image(input_image):
     detect, threshold, pixel_expansion = BASE_INTENSITY_BUNDLE
     result = detect(input_image, spot_threshold=threshold, expand_px=pixel_expansion)
-    assert np.all(result.image == input_image)
+    assert np.array_equal(result.image, input_image)
 
 
 @pytest.mark.parametrize(
