@@ -1,8 +1,8 @@
 """Difference of Gaussians transformation for spot detection with looptrace"""
 
+import json
 from dataclasses import dataclass
 from functools import partial
-import json
 from pathlib import Path
 from typing import Optional, Union
 
@@ -10,17 +10,20 @@ from numpydoc_decorator import doc  # type: ignore[import-untyped]
 from skimage.filters import gaussian as gaussian_filter  # type: ignore[import-untyped]
 from skimage.morphology import ball, white_tophat
 
+from spotfishing._transformation_parameters import common_params
+from spotfishing._types import Image, ImageEndomorphism
 from spotfishing.dog_transform import (
     DifferenceOfGaussiansTransformation,
     PostDifferenceTransformation,
 )
-from spotfishing._transformation_parameters import common_params
-from spotfishing._types import Image, ImageEndomorphism
 
 __author__ = "Vince Reuter"
 __credits__ = ["Vince Reuter", "Kai Sandoval Beckwith"]
 
-__all__ = ["DifferenceOfGaussiansSpecificationForLooptrace"]
+__all__ = [
+    "DifferenceOfGaussiansSpecificationForLooptrace",
+    "ORIGINAL_LOOPTRACE_DOG_SPECIFICATION",
+]
 
 
 Numeric = Union[float, int]
@@ -74,7 +77,9 @@ class DifferenceOfGaussiansSpecificationForLooptrace:
     #     see_also=":meth:`DifferenceOfGaussiansTransformation.build`",
     # )
     @classmethod
-    def from_json_file(cls, fp: Path) -> "DifferenceOfGaussiansTransformation":
+    def from_json_file(
+        cls, fp: Path
+    ) -> "DifferenceOfGaussiansSpecificationForLooptrace":
         with open(fp, "r") as fh:
             data = json.load(fh)
         return cls(**data)
@@ -92,3 +97,13 @@ class DifferenceOfGaussiansSpecificationForLooptrace:
 def div_by_gauss(*, old_img: Image, new_img: Image, sigma: Numeric) -> Image:
     # https://git.embl.de/grp-ellenberg/looptrace/-/blob/master/looptrace/image_processing_functions.py?ref_type=heads#L252
     return new_img / gaussian_filter(old_img, sigma)  # type: ignore[no-any-return]
+
+
+# original parameterisation of the transformation for detection with DoG
+ORIGINAL_LOOPTRACE_DOG_SPECIFICATION = DifferenceOfGaussiansSpecificationForLooptrace(
+    apply_white_tophat=True,
+    sigma_narrow=0.8,
+    sigma_wide=1.3,
+    sigma_post_divide=3,
+    standardise=True,
+)

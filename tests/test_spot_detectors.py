@@ -6,10 +6,11 @@ import hypothesis as hyp
 import numpy as np
 import pandas as pd
 import pytest
-from helpers import ORIGINAL_SPECIFICATION, load_image_file
+from helpers import load_image_file
 
 from spotfishing import DimensionalityError, detect_spots_dog, detect_spots_int
 from spotfishing.detection_result import DETECTION_RESULT_TABLE_COLUMNS
+from spotfishing_looptrace import ORIGINAL_LOOPTRACE_DOG_SPECIFICATION
 
 __author__ = "Vince Reuter"
 __credits__ = ["Vince Reuter"]
@@ -28,7 +29,9 @@ gen_empty_small_image = gen_dims_for_small_image.map(lambda dims: np.empty(shape
 # detection function, threshold setting, and pixel expansion setting
 BASE_INTENSITY_BUNDLE = (detect_spots_int, 300, 1)
 BASE_DOG_BUNDLE = (
-    partial(detect_spots_dog, transform=ORIGINAL_SPECIFICATION.transformation),
+    partial(
+        detect_spots_dog, transform=ORIGINAL_LOOPTRACE_DOG_SPECIFICATION.transformation
+    ),
     15,
     10,
 )
@@ -67,7 +70,10 @@ def test_simple_intensity_detector_result_always_contains_original_image(input_i
 @pytest.mark.parametrize(
     "detect",
     [
-        partial(detect_spots_dog, transform=ORIGINAL_SPECIFICATION.transformation),
+        partial(
+            detect_spots_dog,
+            transform=ORIGINAL_LOOPTRACE_DOG_SPECIFICATION.transformation,
+        ),
         detect_spots_int,
     ],
 )
