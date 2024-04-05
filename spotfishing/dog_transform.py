@@ -7,8 +7,8 @@ import numpy as np
 from numpydoc_decorator import doc  # type: ignore[import-untyped]
 from skimage.filters import gaussian as gaussian_filter  # type: ignore[import-untyped]
 
-from ._types import Image, ImageEndomorphism, NumpyFloat, NumpyInt
 from ._transformation_parameters import common_params
+from ._types import Image, ImageEndomorphism, NumpyFloat, NumpyInt
 
 __author__ = "Vince Reuter"
 __credits__ = ["Vince Reuter"]

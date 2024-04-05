@@ -6,12 +6,18 @@ from pathlib import Path
 
 import pandas as pd
 import pytest
+from helpers import load_image_file
 from pandas.testing import assert_frame_equal
 
-from helpers import ORIGINAL_SPECIFICATION, load_image_file
-from spotfishing import ROI_MEAN_INTENSITY_KEY, RoiCenterKeys, detect_spots_dog, detect_spots_int
 import spotfishing_looptrace
-from spotfishing_looptrace.transformation_specification import (
+from spotfishing import (
+    ROI_MEAN_INTENSITY_KEY,
+    RoiCenterKeys,
+    detect_spots_dog,
+    detect_spots_int,
+)
+from spotfishing_looptrace import (
+    ORIGINAL_LOOPTRACE_DOG_SPECIFICATION,
     DifferenceOfGaussiansSpecificationForLooptrace,
 )
 
@@ -33,7 +39,7 @@ def test_original_settings_from_json():
         / "original__difference_of_gaussians.json"
     )
     obs = DifferenceOfGaussiansSpecificationForLooptrace.from_json_file(data_file)
-    assert obs == ORIGINAL_SPECIFICATION
+    assert obs == ORIGINAL_LOOPTRACE_DOG_SPECIFICATION
 
 
 @pytest.mark.parametrize(
@@ -49,7 +55,8 @@ def test_original_settings_from_json():
         for detect, func_type_name, threshold, expand_px in [
             (
                 partial(
-                    detect_spots_dog, transform=ORIGINAL_SPECIFICATION.transformation
+                    detect_spots_dog,
+                    transform=ORIGINAL_LOOPTRACE_DOG_SPECIFICATION.transformation,
                 ),
                 "diff_gauss",
                 t,
@@ -74,7 +81,7 @@ def test_output_is_correct_with_original_settings(
 
     arr_name = f"img__{data_name}__smaller.npy"
     input_image = load_image_file(arr_name)
-    obs = detect(input_image, spot_threshold=threshold, expand_px=expand_px)  # type: ignore[call-arg]
+    obs = detect(input_image, spot_threshold=threshold, expand_px=expand_px)
     obs_table = obs.table[RoiCenterKeys.to_list() + [ROI_MEAN_INTENSITY_KEY]]
 
     print("EXPECTED (below):")
