@@ -522,8 +522,8 @@ typing_extensions = "*"
 
 [package.source]
 type = "git"
-url = "https://github.com/alimanfoo/numpydoc_decorator.git"
-reference = "main"
+url = "https://github.com/vreuter/numpydoc_decorator"
+reference = "v2.2.1"
 resolved_reference = "a9cbb0a29544788bbfd83ed47082e3442d9e5364"
 
 [[package]]
@@ -1129,4 +1129,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = ">= 3.10.0, < 3.12"
-content-hash = "af49a2189ce5535ea7bced897645a3db2eaec21766c5751df418545f110f88ff"
+content-hash = "f88d824b287a6615e6b01f03ef1e630f6d627e1d5f32155b8e418645f09cdc50"
