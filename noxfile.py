@@ -87,6 +87,7 @@ def tests(session):
     session.run(
         "pytest",
         "-x",
+        "--cov",
         "--log-level=debug",
         "--durations=10",
         "--hypothesis-show-statistics",
