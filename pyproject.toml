@@ -54,7 +54,7 @@ nox = "^2022.11.21"
 pandas-stubs = "^2.2.0.240218"
 pylint = "^2.15.8"
 pytest = "^7.1.0"
-python-type-stubs = { git = "https://github.com/gerlichlab/python-type-stubs.git", branch = "main" }
+python-type-stubs = { git = "https://github.com/gerlichlab/python-type-stubs", tag = "v0.1.0" }
 
 [tool.poetry.group.format]
 optional = true
@@ -80,7 +80,7 @@ nox = "^2022.11.21"
 pandas-stubs = "^2.2.0.240218"
 pylint = "^2.15.8"
 pytest = "^7.1.0"
-python-type-stubs = { git = "https://github.com/gerlichlab/python-type-stubs.git", branch = "main" }
+python-type-stubs = { git = "https://github.com/gerlichlab/python-type-stubs", tag = "v0.1.0" }
 
 [tool.black]
 target-version = ["py310"]

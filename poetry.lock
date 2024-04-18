@@ -800,8 +800,8 @@ develop = false
 
 [package.source]
 type = "git"
-url = "https://github.com/gerlichlab/python-type-stubs.git"
-reference = "main"
+url = "https://github.com/gerlichlab/python-type-stubs"
+reference = "v0.1.0"
 resolved_reference = "c0b6f06817989bfc8695e79c2c9434ff5eefcb49"
 
 [[package]]
@@ -1129,4 +1129,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = ">= 3.10.0, < 3.12"
-content-hash = "f88d824b287a6615e6b01f03ef1e630f6d627e1d5f32155b8e418645f09cdc50"
+content-hash = "2e99515531a2160acbe60282ba2d6980e0c81f30a53a2ffda32a016afbd7edec"
