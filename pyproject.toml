@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "spotfishing"
-version = "0.1.0"
+version = "0.2.0"
 description = "Detecting spots in FISH images"
 authors = [
     "Vince Reuter <vince.reuter@gmail.com>",

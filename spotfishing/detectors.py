@@ -17,7 +17,7 @@ from ._constants import *
 from ._exceptions import DimensionalityError
 from ._types import *
 from .detection_result import (
-    ROI_CENTROID_COLUMN_RENAMING,
+    SPOT_DETECTION_COLUMN_RENAMING,
     ROI_MEASUREMENT_KEYS,
     SKIMAGE_REGIONPROPS_TABLE_COLUMNS_EXPANDED,
     DetectionResult,
@@ -125,13 +125,14 @@ def _build_props_table(
             regionprops_table(
                 label_image=labels,
                 intensity_image=input_image,
-                properties=tuple(
-                    [ROI_LABEL_KEY, ROI_CENTROID_KEY] + ROI_MEASUREMENT_KEYS
-                ),
+                properties=(ROI_CENTROID_KEY, *ROI_MEASUREMENT_KEYS),
             )
         )
-    spot_props = spot_props.drop(["label"], axis=1, errors="ignore")
-    spot_props = spot_props.rename(columns=dict(ROI_CENTROID_COLUMN_RENAMING))
+    spot_props = spot_props.rename(
+        columns=dict(SPOT_DETECTION_COLUMN_RENAMING),
+        inplace=False,
+        errors="raise",
+    )
     spot_props = spot_props.reset_index(drop=True)
     return spot_props, labels
 
