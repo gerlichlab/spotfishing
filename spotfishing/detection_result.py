@@ -30,15 +30,17 @@ class RoiCenterKeys(Enum):
 
 # how to rename columns arising from extraction from skimage.measure.regionprops_table, to better suit downstream analysis
 # TODO: consider making this configurable, see: https://github.com/gerlichlab/spotfishing/issues/1
-SPOT_DETECTION_COLUMN_RENAMING: tuple[str, str] = tuple(
+SPOT_DETECTION_COLUMN_RENAMING: tuple[tuple[str, str], ...] = tuple(
     (f"{ROI_CENTROID_KEY}-{i}", c) for i, c in enumerate(RoiCenterKeys.to_list())
 ) + (
     (ROI_AREA_KEY, ROI_AREA_KEY),
-    (ROI_MEAN_INTENSITY_KEY, ROI_MEAN_INTENSITY_KEY_CAMEL_CASE), 
+    (ROI_MEAN_INTENSITY_KEY, ROI_MEAN_INTENSITY_KEY_CAMEL_CASE),
 )
 
 # the sequence of columns of fields extracted from skimage.measure.regionprops_table, after accounting for expansion in multiple dimensions (e.g., centroid_weighted)
-SKIMAGE_REGIONPROPS_TABLE_COLUMNS_EXPANDED = [old for old, _ in SPOT_DETECTION_COLUMN_RENAMING]
+SKIMAGE_REGIONPROPS_TABLE_COLUMNS_EXPANDED = [
+    old for old, _ in SPOT_DETECTION_COLUMN_RENAMING
+]
 
 # the expected column names in a detection result table, after extraction and renaming
 DETECTION_RESULT_TABLE_COLUMNS = [new for _, new in SPOT_DETECTION_COLUMN_RENAMING]

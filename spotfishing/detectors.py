@@ -17,8 +17,8 @@ from ._constants import *
 from ._exceptions import DimensionalityError
 from ._types import *
 from .detection_result import (
-    SPOT_DETECTION_COLUMN_RENAMING,
     SKIMAGE_REGIONPROPS_TABLE_COLUMNS_EXPANDED,
+    SPOT_DETECTION_COLUMN_RENAMING,
     DetectionResult,
 )
 from .dog_transform import DifferenceOfGaussiansTransformation
