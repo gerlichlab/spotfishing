@@ -11,7 +11,7 @@ from pandas.testing import assert_frame_equal
 
 import spotfishing_looptrace
 from spotfishing import (
-    ROI_MEAN_INTENSITY_KEY,
+    ROI_MEAN_INTENSITY_KEY_CAMEL_CASE,
     RoiCenterKeys,
     detect_spots_dog,
     detect_spots_int,
@@ -82,7 +82,7 @@ def test_output_is_correct_with_original_settings(
     arr_name = f"img__{data_name}__smaller.npy"
     input_image = load_image_file(arr_name)
     obs = detect(input_image, spot_threshold=threshold, expand_px=expand_px)
-    obs_table = obs.table[RoiCenterKeys.to_list() + [ROI_MEAN_INTENSITY_KEY]]
+    obs_table = obs.table[RoiCenterKeys.to_list() + [ROI_MEAN_INTENSITY_KEY_CAMEL_CASE]]
 
     print("EXPECTED (below):")
     print(exp_table)
