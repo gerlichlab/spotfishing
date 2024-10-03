@@ -18,7 +18,6 @@ from ._exceptions import DimensionalityError
 from ._types import *
 from .detection_result import (
     SPOT_DETECTION_COLUMN_RENAMING,
-    ROI_MEASUREMENT_KEYS,
     SKIMAGE_REGIONPROPS_TABLE_COLUMNS_EXPANDED,
     DetectionResult,
 )
@@ -125,7 +124,7 @@ def _build_props_table(
             regionprops_table(
                 label_image=labels,
                 intensity_image=input_image,
-                properties=(ROI_CENTROID_KEY, *ROI_MEASUREMENT_KEYS),
+                properties=(ROI_CENTROID_KEY, ROI_AREA_KEY, ROI_MEAN_INTENSITY_KEY),
             )
         )
     spot_props = spot_props.rename(
