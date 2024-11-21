@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "spotfishing"
-version = "0.2.1"
+version = "0.3.0"
 description = "Detecting spots in FISH images"
 authors = [
     "Vince Reuter <vince.reuter@gmail.com>",
@@ -26,6 +26,7 @@ include = ["examples"]
 [tool.poetry.dependencies]
 # These are the main runtime dependencies.
 python = ">= 3.10.0, < 3.13"
+gertils = { git = "https://github.com/gerlichlab/gertils.git", tag = "v0.5.1" }
 numpy = "^1.24.2"
 numpydoc_decorator = "^2.2.1"
 pandas = "^1.5.3"

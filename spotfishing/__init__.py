@@ -1,10 +1,7 @@
 """Package-level members"""
 
-from ._constants import (
-    ROI_AREA_KEY,
-    ROI_MEAN_INTENSITY_KEY,
-    ROI_MEAN_INTENSITY_KEY_CAMEL_CASE,
-)
+from ._constants import ROI_MEAN_INTENSITY_KEY  # just for top-level availability
+from ._constants import ROI_AREA_KEY, ROI_MEAN_INTENSITY_KEY_CAMEL_CASE
 from ._exceptions import *
 from .detection_result import DetectionResult, RoiCenterKeys
 from .detectors import detect_spots_dog, detect_spots_int
