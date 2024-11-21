@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "spotfishing"
-version = "0.2.0"
+version = "0.2.1"
 description = "Detecting spots in FISH images"
 authors = [
     "Vince Reuter <vince.reuter@gmail.com>",
@@ -13,6 +13,7 @@ classifiers = [
     "Programming Language :: Python",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Topic :: Scientific/Engineering :: Bio-Informatics",    
     "Typing :: Typed",
 ]
@@ -24,7 +25,7 @@ include = ["examples"]
 
 [tool.poetry.dependencies]
 # These are the main runtime dependencies.
-python = ">= 3.10.0, < 3.12"
+python = ">= 3.10.0, < 3.13"
 numpy = "^1.24.2"
 numpydoc_decorator = { git = "https://github.com/vreuter/numpydoc_decorator", tag = "v2.2.1" }
 pandas = "^1.5.3"
