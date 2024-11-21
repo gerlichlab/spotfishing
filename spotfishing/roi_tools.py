@@ -1,13 +1,14 @@
 """Tools for working with spots/ROIs"""
 
-from typing import TypeAlias
+from typing import Any, Mapping, TypeAlias
 
 from gertils.geometry import ImagePoint3D
 from numpydoc_decorator import doc
+from pandas import Series
 
 from .detection_result import RoiCenterKeys
 
-Record: TypeAlias = pd.Series | Mapping[str, Any]  # type: ignore[misc,type-arg]
+Record: TypeAlias = Series | Mapping[str, Any]  # type: ignore[misc,type-arg]
 
 
 @doc(
