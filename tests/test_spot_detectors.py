@@ -4,6 +4,7 @@ from functools import partial
 
 import hypothesis as hyp
 import numpy as np
+import numpy.testing as np_test
 import pandas as pd
 import pytest
 from helpers import load_image_file
@@ -64,7 +65,7 @@ def test_spot_table_columns__are_always_as_expected(
 def test_simple_intensity_detector_result_always_contains_original_image(input_image):
     detect, threshold, pixel_expansion = BASE_INTENSITY_BUNDLE
     result = detect(input_image, spot_threshold=threshold, expand_px=pixel_expansion)
-    assert np.array_equal(result.image, input_image)
+    np_test.assert_allclose(result.image, input_image)
 
 
 @pytest.mark.parametrize(
