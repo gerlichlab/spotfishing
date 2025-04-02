@@ -3,7 +3,7 @@
 from typing import Any, Mapping, TypeAlias
 
 from gertils.geometry import ImagePoint3D
-from numpydoc_decorator import doc
+from numpydoc_decorator import doc  # type: ignore[import-untyped]
 from pandas import Series
 
 from .detection_result import RoiCenterKeys
