@@ -371,7 +371,7 @@ tqdm = ["tqdm"]
 
 [[package]]
 name = "gertils"
-version = "0.5.1"
+version = "0.6.0"
 description = "General computing utilities for data processing and analysis in the Gerlich group at IMBA"
 optional = false
 python-versions = ">=3.10.0,<3.13"
@@ -387,8 +387,8 @@ zarr = "^2.4.12"
 [package.source]
 type = "git"
 url = "https://github.com/gerlichlab/gertils.git"
-reference = "v0.5.1"
-resolved_reference = "95d6d63ac7ffd26414bf7d2e1b5b327e030158cf"
+reference = "v0.6.0"
+resolved_reference = "12746de9bbcb6be5800c609c888bd5440ce700fd"
 
 [[package]]
 name = "hypothesis"
@@ -1533,4 +1533,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">= 3.10.0, < 3.13"
-content-hash = "add840d2132f70681ad62fe0985034763fe152056246215a4c50363eb2ec5cb8"
+content-hash = "94afe97b58c2caced64592135a4b5828050338dd42a230574ed294a2491a9f7d"
