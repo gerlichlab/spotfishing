@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "spotfishing"
-version = "0.3.1"
+version = "0.3.2"
 description = "Detecting spots in FISH images"
 authors = [
     "Vince Reuter <vince.reuter@gmail.com>",
@@ -30,7 +30,7 @@ gertils = { git = "https://github.com/gerlichlab/gertils.git", tag = "v0.6.0" }
 numpy = "^1.24.2"
 numpydoc_decorator = "^2.2.1"
 pandas = "^1.5.3"
-scikit-image = "^0.20.0"
+scikit-image = ">=0.20.0"
 scipy = "^1.10.1"
 
 [tool.poetry.group.nox]
