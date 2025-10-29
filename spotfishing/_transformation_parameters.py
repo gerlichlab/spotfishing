@@ -5,7 +5,7 @@ from typing_extensions import Annotated, Doc
 __author__ = "Vince Reuter"
 
 
-class common_params:
+class common_params:  # pylint: disable=invalid-name,missing-class-docstring,too-few-public-methods
     sigma_narrow = Annotated[
         str,
         Doc(

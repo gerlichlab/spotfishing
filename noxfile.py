@@ -106,6 +106,7 @@ def lint(session):
         "protected-access",
         "redefined-outer-name",
         "too-many-arguments",
+        "too-many-function-args",
         "too-many-instance-attributes",
         "too-many-lines",
         "unused-argument",

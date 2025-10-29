@@ -1,6 +1,6 @@
 """Tools for working with spots/ROIs"""
 
-from typing import Any, Mapping, TypeAlias
+from typing import Mapping, TypeAlias
 
 from gertils.geometry import ImagePoint3D
 from numpydoc_decorator import doc  # type: ignore[import-untyped]
@@ -8,7 +8,7 @@ from pandas import Series
 
 from .detection_result import RoiCenterKeys
 
-Record: TypeAlias = Series | Mapping[str, Any]  # type: ignore[misc,type-arg]
+Record: TypeAlias = Series | Mapping[str, object]  # type: ignore[explicit-any]
 
 
 @doc(
@@ -22,8 +22,11 @@ Record: TypeAlias = Series | Mapping[str, Any]  # type: ignore[misc,type-arg]
     ),
     returns="Coordinates which define a point in a 3D image.",
 )
-def get_centroid_from_record(rec: Record) -> ImagePoint3D:  # noqa: D103
-    z = rec[RoiCenterKeys.Z.value]
-    y = rec[RoiCenterKeys.Y.value]
-    x = rec[RoiCenterKeys.X.value]
-    return ImagePoint3D(z=z, y=y, x=x)
+def get_centroid_from_record(  # pylint: disable=missing-function-docstring
+    rec: Record,
+) -> ImagePoint3D:  # noqa: D103
+    return ImagePoint3D(
+        z=rec[RoiCenterKeys.Z.value],  # type: ignore[arg-type]
+        y=rec[RoiCenterKeys.Y.value],  # type: ignore[arg-type]
+        x=rec[RoiCenterKeys.X.value],  # type: ignore[arg-type]
+    )

@@ -10,26 +10,32 @@ if TYPE_CHECKING:
     import numpy.typing as npt
     import pandas as pd
 
-from ._constants import *
+from ._constants import (
+    ROI_AREA_KEY,
+    ROI_CENTROID_KEY,
+    ROI_MEAN_INTENSITY_KEY,
+    ROI_MEAN_INTENSITY_KEY_CAMEL_CASE,
+)
 from ._exceptions import DimensionalityError
-from ._types import *
+from ._types import NumpyInt, PixelValue
 
 __author__ = "Vince Reuter"
 __all__ = ["DetectionResult"]
 
 
 class RoiCenterKeys(Enum):
+    """A collection of the keys (column names) in a table from which to get (z, y, x)"""
+
     Z = "zc"
     Y = "yc"
     X = "xc"
 
     @classmethod
-    def to_list(cls) -> list[str]:
+    def to_list(cls) -> list[str]:  # pylint: disable=missing-function-docstring
         return [m.value for m in cls]
 
 
 # how to rename columns arising from extraction from skimage.measure.regionprops_table, to better suit downstream analysis
-# TODO: consider making this configurable, see: https://github.com/gerlichlab/spotfishing/issues/1
 SPOT_DETECTION_COLUMN_RENAMING: tuple[tuple[str, str], ...] = tuple(
     (f"{ROI_CENTROID_KEY}-{i}", c) for i, c in enumerate(RoiCenterKeys.to_list())
 ) + (
@@ -55,7 +61,7 @@ DETECTION_RESULT_TABLE_COLUMNS = [new for _, new in SPOT_DETECTION_COLUMN_RENAMI
     ),
 )
 @dataclass(frozen=True, kw_only=True)
-class DetectionResult:
+class DetectionResult:  # pylint: disable=missing-class-docstring
     table: "pd.DataFrame"
     image: "npt.NDArray[PixelValue]"
     labels: "npt.NDArray[NumpyInt]"

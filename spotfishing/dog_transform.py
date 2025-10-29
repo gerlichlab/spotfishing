@@ -5,7 +5,7 @@ from typing import Optional, Protocol, Union
 
 import numpy as np
 from numpydoc_decorator import doc  # type: ignore[import-untyped]
-from skimage.filters import gaussian as gaussian_filter  # type: ignore[import-untyped]
+from skimage.filters import gaussian as gaussian_filter
 
 from ._transformation_parameters import common_params
 from ._types import Image, ImageEndomorphism, NumpyFloat, NumpyInt
@@ -18,7 +18,9 @@ __all__ = ["DifferenceOfGaussiansTransformation"]
 Numeric = Union[float, int, NumpyFloat, NumpyInt]
 
 
-class PostDifferenceTransformation(Protocol):
+class PostDifferenceTransformation(
+    Protocol
+):  # pylint: disable=too-few-public-methods,missing-class-docstring
     def __call__(self, *, old_img: Image, new_img: Image) -> Image:
         ...
 
@@ -45,7 +47,7 @@ class PostDifferenceTransformation(Protocol):
     returns="A structure of the same shape as the input, just with all transformations applied",
 )
 @dataclass(frozen=True, kw_only=True)
-class DifferenceOfGaussiansTransformation:
+class DifferenceOfGaussiansTransformation:  # pylint: disable=missing-class-docstring
     pre_diff: Optional[ImageEndomorphism]
     sigma_narrow: Numeric
     sigma_wide: Numeric
@@ -80,12 +82,12 @@ class DifferenceOfGaussiansTransformation:
         img = img_narrow - img_wide
         if self.post_diff is not None:
             img = self.post_diff(old_img=input_image, new_img=img)
-        return (img - np.mean(img)) / np.std(img) if self.standardise else img  # type: ignore[no-any-return]
+        return (img - np.mean(img)) / np.std(img) if self.standardise else img
 
 
 @doc(
     summary="Test the given object for membership in a numeric type",
     parameters=dict(obj="Object to test for membership in a numeric type"),
 )
-def is_numeric(obj: object) -> bool:
+def is_numeric(obj: object) -> bool:  # pylint: disable=missing-function-docstring
     return isinstance(obj, Numeric)  # type: ignore

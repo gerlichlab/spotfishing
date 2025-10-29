@@ -126,7 +126,7 @@ strict_optional = true
 main.jobs = 4
 main.py-version = "3.10"
 reports.output-format = "colorized"
-"messages control".disable = "logging-fstring-interpolation,unspecified-encoding,wildcard-import"
+"messages control".disable = "logging-fstring-interpolation,unspecified-encoding,wildcard-import,use-dict-literal,fixme,wrong-import-position,line-too-long,no-name-in-module"
 
 [build-system]
 requires = ["poetry-core"]

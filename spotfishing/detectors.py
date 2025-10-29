@@ -10,12 +10,12 @@ from numpydoc_decorator import doc  # type: ignore[import-untyped]
 from scipy import ndimage as ndi
 from skimage.measure import regionprops_table
 from skimage.morphology import remove_small_objects
-from skimage.segmentation import expand_labels  # type: ignore[import-untyped]
+from skimage.segmentation import expand_labels
 from typing_extensions import Annotated, Doc
 
-from ._constants import *
+from ._constants import ROI_AREA_KEY, ROI_CENTROID_KEY, ROI_MEAN_INTENSITY_KEY
 from ._exceptions import DimensionalityError
-from ._types import *
+from ._types import NumpyInt, PixelValue
 from .detection_result import (
     SKIMAGE_REGIONPROPS_TABLE_COLUMNS_EXPANDED,
     SPOT_DETECTION_COLUMN_RENAMING,
@@ -33,7 +33,7 @@ Numeric = Union[int, float]
 
 @doc(summary="Parameter descriptions common to various spot detection procedures")
 @dataclass(frozen=True)
-class detection_signature:
+class detection_signature:  # pylint: disable=invalid-name,missing-class-docstring
     image = Annotated[npt.NDArray[PixelValue], Doc("3D image in which to detect spots")]
     threshold = Annotated[
         Numeric,
@@ -62,7 +62,7 @@ class detection_signature:
         TypeError="If the given `transform` isn't specifically a `DifferenceOfGaussiansTransformation`",
     ),
 )
-def detect_spots_dog(
+def detect_spots_dog(  # pylint: disable=missing-function-docstring
     input_image: detection_signature.image,
     *,
     spot_threshold: detection_signature.threshold,
@@ -77,7 +77,7 @@ def detect_spots_dog(
             f"For DoG-based detection, the transformation must be of type {DifferenceOfGaussiansTransformation.__name__}; got {type(transform).__name__}"
         )
     img = transform(input_image)
-    labels, _ = ndi.label(img > spot_threshold)  # type: ignore[no-untyped-call]
+    labels, _ = ndi.label(img > spot_threshold)  # type: ignore[attr-defined]
     spot_props, labels = _build_props_table(
         labels=labels, input_image=input_image, expand_px=expand_px
     )
@@ -90,7 +90,7 @@ def detect_spots_dog(
         TypeError="If the given `transform` isn't specifically a `DifferenceOfGaussiansTransformation`",
     ),
 )
-def detect_spots_int(
+def detect_spots_int(  # pylint: disable=missing-function-docstring
     input_image: detection_signature.image,
     *,
     spot_threshold: detection_signature.threshold,
@@ -98,9 +98,9 @@ def detect_spots_int(
 ) -> detection_signature.result:
     _check_input_image(input_image)
     binary = input_image > spot_threshold
-    binary = ndi.binary_fill_holes(binary)  # type: ignore[no-untyped-call]
-    struct = ndi.generate_binary_structure(input_image.ndim, 2)  # type: ignore[no-untyped-call]
-    labels, num_obj = ndi.label(binary, structure=struct)  # type: ignore[no-untyped-call]
+    binary = ndi.binary_fill_holes(binary)  # type: ignore[attr-defined]
+    struct = ndi.generate_binary_structure(input_image.ndim, 2)  # type: ignore[attr-defined]
+    labels, num_obj = ndi.label(binary, structure=struct)  # type: ignore[attr-defined]
     labels = remove_small_objects(labels, min_size=5) if num_obj > 1 else labels
     spot_props, labels = _build_props_table(
         labels=labels, input_image=input_image, expand_px=expand_px
@@ -115,7 +115,7 @@ def _build_props_table(
     expand_px: Optional[Numeric],
 ) -> Tuple[pd.DataFrame, npt.NDArray[NumpyInt]]:
     if expand_px:
-        labels = expand_labels(labels, expand_px)
+        labels = expand_labels(labels, expand_px)  # type: ignore[no-untyped-call]
     if np.all(labels == 0):
         # No substructures (ROIs) exist.
         spot_props = pd.DataFrame(columns=SKIMAGE_REGIONPROPS_TABLE_COLUMNS_EXPANDED)

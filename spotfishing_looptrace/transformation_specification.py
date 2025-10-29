@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Optional, Union
 
 from numpydoc_decorator import doc  # type: ignore[import-untyped]
-from skimage.filters import gaussian as gaussian_filter  # type: ignore[import-untyped]
+from skimage.filters import gaussian as gaussian_filter
 from skimage.morphology import ball, white_tophat
 
 from spotfishing._transformation_parameters import common_params
