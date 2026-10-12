@@ -27,8 +27,8 @@ def install_groups(
     Instead, use `poetry export` with suitable options to generate a requirements.txt
     file to pass to session.install().
 
-    Auto-skip the `poetry export` step if the poetry.lock file is unchanged
-    (matching hash) since the last time this session was run.
+    Auto-skip the `poetry export` step if neither the poetry.lock file nor the export
+    command has changed (matching hash) since the last time this session was run.
     """
     if isinstance(session.virtualenv, nox.virtualenv.PassthroughEnv):
         session.warn(
@@ -39,22 +39,26 @@ def install_groups(
         return
 
     lockdata = Path("poetry.lock").read_bytes()
-    digest = hashlib.blake2b(lockdata).hexdigest()
     requirements_txt = Path(session.cache_dir, session.name, "reqs_from_poetry.txt")
+    argv = [
+        "poetry",
+        "export",
+        "--format=requirements.txt",
+        # pip checks hashes for all requirements or none, and gertils, a git dependency, has
+        # none. So pip checks none here; CI and the Nix shell install with Poetry, which does.
+        "--without-hashes",
+        f"--output={requirements_txt}",
+    ]
+    if include:
+        option = "only" if not include_self else "with"
+        argv.append(f"--{option}={','.join(include)}")
+    # The export depends on the lock file and on the command, so a change to either renews it.
+    digest = hashlib.blake2b(lockdata + " ".join(argv).encode()).hexdigest()
     hashfile = requirements_txt.with_suffix(".hash")
 
     if not hashfile.is_file() or hashfile.read_text() != digest:
         session.log(f"Will generate requirements hashfile: {hashfile}")
         requirements_txt.parent.mkdir(parents=True, exist_ok=True)
-        argv = [
-            "poetry",
-            "export",
-            "--format=requirements.txt",
-            f"--output={requirements_txt}",
-        ]
-        if include:
-            option = "only" if not include_self else "with"
-            argv.append(f"--{option}={','.join(include)}")
         session.debug(f"Running command: {' '.join(argv)}")
         session.run_always(*argv, external=True)
         session.debug(f"Writing requirements hashfile: {hashfile}")
