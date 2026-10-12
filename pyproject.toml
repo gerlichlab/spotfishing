@@ -101,7 +101,7 @@ uri-ignore-words-list = "*" # prevent spelling correction in URL-like values.
 profile = "black"
 
 [tool.mypy]
-files = ['*.py', 'spotfishing/*.py', 'spotfishing_looptrace/*.py', 'tests/*.py']
+files = ['*.py', 'spotfishing/*.py', 'spotfishing_looptrace/*.py', 'tests/*.py', 'tests/spotfishing_looptrace/*.py']
 warn_redundant_casts = true
 warn_unused_ignores = true
 warn_return_any = true

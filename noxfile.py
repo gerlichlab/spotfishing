@@ -124,7 +124,15 @@ def lint(session):
 def format(session):
     install_groups(session, include=["format"], include_self=False)
     session.run("codespell", "--enable-colors")
-    session.run("isort", PACKAGE_NAME, TESTS_SUBFOLDER, "--check", "--diff", "--color")
+    session.run(
+        "isort",
+        PACKAGE_NAME,
+        LOOPTRACE_PACKAGE_NAME,
+        TESTS_SUBFOLDER,
+        "--check",
+        "--diff",
+        "--color",
+    )
     session.run("black", ".", "--check", "--diff", "--color")
 
 
@@ -132,5 +140,5 @@ def format(session):
 def reformat(session):
     install_groups(session, include=["format"], include_self=False)
     session.run("codespell", "--write-changes")
-    session.run("isort", PACKAGE_NAME, TESTS_SUBFOLDER)
+    session.run("isort", PACKAGE_NAME, LOOPTRACE_PACKAGE_NAME, TESTS_SUBFOLDER)
     session.run("black", ".")
