@@ -21,7 +21,7 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: ~/.cache/pypoetry/virtualenvs
-          key: ${{ runner.os }}-poetry-format-${{ hashFiles('poetry.lock') }}
+          key: ${{ runner.os }}-python-${{ matrix.python-version }}-poetry-format-${{ hashFiles('poetry.lock') }}
       - name: Install project
         run: poetry install --no-interaction --sync --no-root --only=nox,format
       - name: Run formatting checks
