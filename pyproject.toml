@@ -93,6 +93,10 @@ ignore-words-list = "jupyter,iff"  # prevent jupyter -> jupiter, iff -> if
 check-filenames = true
 uri-ignore-words-list = "*" # prevent spelling correction in URL-like values.
 
+[tool.pytest.ini_options]
+# Tests import their shared helpers module from the tests folder, wherever pytest starts from.
+pythonpath = ["tests"]
+
 [tool.pyright]
 include = ["spotfishing", "spotfishing_looptrace", "tests", "noxfile.py"]
 # The packages get strict checking; the tests and the noxfile get the standard level.
