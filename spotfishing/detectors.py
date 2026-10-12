@@ -1,14 +1,14 @@
 """Different spot detection implementations"""
 
 from dataclasses import dataclass
-from typing import Optional, Tuple, Union, cast
+from typing import Annotated, Optional, Union, cast
 
 import numpy as np
 import numpy.typing as npt
 import pandas as pd
 from numpydoc_decorator import doc
 from scipy import ndimage as ndi
-from typing_extensions import Annotated, Doc
+from typing_extensions import Doc
 
 from ._constants import ROI_AREA_KEY, ROI_CENTROID_KEY, ROI_MEAN_INTENSITY_KEY
 from ._exceptions import DimensionalityError
@@ -31,7 +31,7 @@ Numeric = Union[int, float]
 
 @doc(summary="Parameter descriptions common to various spot detection procedures")
 @dataclass(frozen=True)
-class detection_signature:  # pylint: disable=invalid-name,missing-class-docstring
+class detection_signature:  # noqa: N801
     image = Annotated[npt.NDArray[PixelValue], Doc("3D image in which to detect spots")]
     threshold = Annotated[
         Numeric,
@@ -61,15 +61,15 @@ class detection_signature:  # pylint: disable=invalid-name,missing-class-docstri
         DimensionalityError="If `input_image` isn't 3D",
     ),
 )
-def detect_spots_dog(  # pylint: disable=missing-function-docstring
+def detect_spots_dog(  # noqa: D103
     input_image: detection_signature.image,
     *,
     spot_threshold: detection_signature.threshold,
     expand_px: detection_signature.expand_px,
     transform: DifferenceOfGaussiansTransformation,
 ) -> detection_signature.result:
-    # TODO: consider replacing by something from scikit-image.
-    # See: https://github.com/gerlichlab/spotfishing/issues/5
+    # Something from scikit-image, such as skimage.feature.blob_dog, could replace this; see
+    # https://github.com/gerlichlab/spotfishing/issues/5
     _check_input_image(input_image)
     # Checked at run time, since callers may pass any type despite the annotation.
     if not isinstance(cast("object", transform), DifferenceOfGaussiansTransformation):
@@ -91,7 +91,7 @@ def detect_spots_dog(  # pylint: disable=missing-function-docstring
         DimensionalityError="If `input_image` isn't 3D",
     ),
 )
-def detect_spots_int(  # pylint: disable=missing-function-docstring
+def detect_spots_int(  # noqa: D103
     input_image: detection_signature.image,
     *,
     spot_threshold: detection_signature.threshold,
@@ -112,7 +112,7 @@ def detect_spots_int(  # pylint: disable=missing-function-docstring
 def _label(
     mask: npt.NDArray[np.bool_],
     structure: Optional[npt.NDArray[np.bool_]] = None,
-) -> Tuple[npt.NDArray[NumpyInt], int]:
+) -> tuple[npt.NDArray[NumpyInt], int]:
     """Label the connected regions of a mask, and count them.
 
     scipy returns both only when it is handed no array to write the labels into, as here;
@@ -126,7 +126,7 @@ def _build_props_table(
     labels: npt.NDArray[NumpyInt],
     input_image: npt.NDArray[PixelValue],
     expand_px: Optional[Numeric],
-) -> Tuple[pd.DataFrame, npt.NDArray[NumpyInt]]:
+) -> tuple[pd.DataFrame, npt.NDArray[NumpyInt]]:
     if expand_px:
         labels = expand_labels(labels, expand_px)
     if np.all(labels == 0):
@@ -153,5 +153,5 @@ def _check_input_image(img: npt.NDArray[PixelValue]) -> None:
     # Checked at run time, since callers may pass any type despite the annotation.
     if not isinstance(cast("object", img), np.ndarray):
         raise TypeError(f"Expected numpy array for input image but got {type(img).__name__}")
-    if img.ndim != 3:
+    if img.ndim != 3:  # noqa: PLR2004
         raise DimensionalityError(f"Expected 3D input image but got {img.ndim}-dimensional")

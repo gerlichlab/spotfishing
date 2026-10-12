@@ -1,6 +1,5 @@
 """Helpers for test functions/suites"""
 
-import os
 from pathlib import Path
 from typing import Union
 
@@ -19,7 +18,7 @@ Numeric = Union[float, int]
 
 def get_img_data_file(fn: str) -> Path:
     """Get the path to an input file (image data)."""
-    return Path(os.path.dirname(__file__)) / "data" / "inputs" / fn
+    return Path(__file__).parent / "data" / "inputs" / fn
 
 
 def load_image_file(fn: str) -> np.ndarray:

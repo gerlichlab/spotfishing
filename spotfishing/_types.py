@@ -1,6 +1,7 @@
 """Aliases for numeric types"""
 
-from typing import Any, Callable, Union
+from collections.abc import Callable
+from typing import Any, Union
 
 import numpy as np
 import numpy.typing as npt

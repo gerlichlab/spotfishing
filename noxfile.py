@@ -1,16 +1,14 @@
 """Declaration of Nox commands which can be run for this package"""
 
 import hashlib
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable
 
 import nox
 import nox.virtualenv
 
 PYTHON_VERSIONS = ["3.11", "3.12"]
-TESTS_SUBFOLDER = "tests"
 PACKAGE_NAME = "spotfishing"
-LOOPTRACE_PACKAGE_NAME = "spotfishing_looptrace"
 
 
 def install_groups(
@@ -84,7 +82,8 @@ def install_groups(
 
 
 @nox.session(python=PYTHON_VERSIONS)
-def tests(session):
+def tests(session: nox.Session) -> None:
+    """Run the tests."""
     install_groups(session, include=["test"])
     session.run(
         "pytest",
@@ -98,31 +97,16 @@ def tests(session):
 
 
 @nox.session(python=PYTHON_VERSIONS)
-def lint(session):
+def lint(session: nox.Session) -> None:
+    """Check the types with pyright and lint with ruff."""
     install_groups(session, include=["lint"])
     session.run("pyright")
-    session.run("pylint", PACKAGE_NAME, LOOPTRACE_PACKAGE_NAME)
-    extra_warnings_to_disable_for_tests_subfolder = [
-        "invalid-name",
-        "missing-function-docstring",
-        "protected-access",
-        "redefined-outer-name",
-        "too-many-arguments",
-        "too-many-function-args",
-        "too-many-instance-attributes",
-        "too-many-lines",
-        "unused-argument",
-        "use-implicit-booleaness-not-comparison",
-    ]
-    session.run(
-        "pylint",
-        f"--disable={','.join(extra_warnings_to_disable_for_tests_subfolder)}",
-        TESTS_SUBFOLDER,
-    )
+    session.run("ruff", "check")
 
 
-@nox.session
-def format(session):
+@nox.session(name="format")
+def check_format(session: nox.Session) -> None:
+    """Check the spelling, the order of the imports and the layout."""
     install_groups(session, include=["format"], include_self=False)
     session.run("codespell", "--enable-colors")
     session.run("ruff", "check", "--select=I", "--diff")
@@ -130,7 +114,8 @@ def format(session):
 
 
 @nox.session
-def reformat(session):
+def reformat(session: nox.Session) -> None:
+    """Fix the spelling, the order of the imports and the layout."""
     install_groups(session, include=["format"], include_self=False)
     session.run("codespell", "--write-changes")
     session.run("ruff", "check", "--select=I", "--fix")

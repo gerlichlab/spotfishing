@@ -33,19 +33,20 @@ ORIGINAL_DOG_EXPAND_PX = 10
 ORIGINAL_DOG_EXPAND_PX = 1
 
 
-def test_original_settings_from_json():
+@pytest.mark.parametrize("as_given", [Path, str])
+def test_original_settings_from_json(as_given):
     data_file = (
         importlib_resources.files(spotfishing_looptrace)
         / "examples"
         / "original__difference_of_gaussians.json"
     )
     with importlib_resources.as_file(data_file) as path:
-        obs = DifferenceOfGaussiansSpecificationForLooptrace.from_json_file(path)
+        obs = DifferenceOfGaussiansSpecificationForLooptrace.from_json_file(as_given(path))
     assert obs == ORIGINAL_LOOPTRACE_DOG_SPECIFICATION
 
 
 @pytest.mark.parametrize(
-    ["detect", "func_type_name", "threshold", "expand_px"],
+    ("detect", "func_type_name", "threshold", "expand_px"),
     [
         pytest.param(
             detect,
@@ -80,7 +81,7 @@ def test_output_is_correct_with_original_settings(
     arr_name = f"img__{data_name}__smaller.npy"
     input_image = load_image_file(arr_name)
     obs = detect(input_image, spot_threshold=threshold, expand_px=expand_px)
-    obs_table = obs.table[RoiCenterKeys.to_list() + [ROI_MEAN_INTENSITY_KEY_CAMEL_CASE]]
+    obs_table = obs.table[[*RoiCenterKeys.to_list(), ROI_MEAN_INTENSITY_KEY_CAMEL_CASE]]
 
     print("EXPECTED (below):")
     print(exp_table)

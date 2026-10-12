@@ -50,7 +50,7 @@ def white_tophat(image: _Array, footprint: npt.NDArray[Any]) -> _Array:
 
 
 def remove_small_objects(
-    ar: _Array,  # pylint: disable=invalid-name
+    ar: _Array,
     min_size: int,
 ) -> _Array:
     """Remove the labelled objects smaller than the given size."""

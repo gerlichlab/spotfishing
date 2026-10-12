@@ -47,7 +47,7 @@ Numeric = Union[float, int]
     ),
 )
 @dataclass(frozen=True, kw_only=True)
-class DifferenceOfGaussiansSpecificationForLooptrace:  # pylint: disable=missing-class-docstring
+class DifferenceOfGaussiansSpecificationForLooptrace:  # noqa: D101
     apply_white_tophat: bool
     sigma_narrow: Numeric
     sigma_wide: Numeric
@@ -91,22 +91,23 @@ class DifferenceOfGaussiansSpecificationForLooptrace:  # pylint: disable=missing
     @classmethod
     def from_json_file(
         cls,
-        fp: Path,  # pylint: disable=invalid-name
+        fp: Union[str, Path],
     ) -> "DifferenceOfGaussiansSpecificationForLooptrace":
         """Build an instance from parameters in a JSON file.
 
         Parameters
         ----------
         fp
-            Path to the file to parse for parameters.
+            Path to the file to parse for parameters, as a str or a Path.
 
         Returns
         -------
         DifferenceOfGaussiansSpecificationForLooptrace
             A newly constructed instance, parameterised according to the data in the
             given config file.
+
         """
-        with open(fp, "r") as handle:
+        with Path(fp).open(encoding="utf-8") as handle:
             data = json.load(handle)
         return cls(**data)
 
@@ -120,9 +121,7 @@ class DifferenceOfGaussiansSpecificationForLooptrace:  # pylint: disable=missing
     ),
     returns="The transformed image",
 )
-def div_by_gauss(  # pylint: disable=missing-function-docstring
-    *, old_img: Image, new_img: FloatImage, sigma: Numeric
-) -> FloatImage:
+def div_by_gauss(*, old_img: Image, new_img: FloatImage, sigma: Numeric) -> FloatImage:
     # https://git.embl.de/grp-ellenberg/looptrace/-/blob/master/looptrace/image_processing_functions.py?ref_type=heads#L252
     return new_img / gaussian_filter(old_img, sigma)
 

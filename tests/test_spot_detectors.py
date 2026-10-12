@@ -39,7 +39,7 @@ BASE_DOG_BUNDLE = (
 
 # @pytest.mark.parametrize("detect", [detect_spots_dog, detect_spots_int])
 @pytest.mark.parametrize(
-    ["detect", "threshold", "pixel_expansion"], [BASE_DOG_BUNDLE, BASE_INTENSITY_BUNDLE]
+    ("detect", "threshold", "pixel_expansion"), [BASE_DOG_BUNDLE, BASE_INTENSITY_BUNDLE]
 )
 @pytest.mark.parametrize(
     "input_image",
@@ -78,7 +78,7 @@ def test_simple_intensity_detector_result_always_contains_original_image(input_i
     ],
 )
 @pytest.mark.parametrize(
-    ["input_image", "expected_error_type", "expected_message"],
+    ("input_image", "expected_error_type", "expected_message"),
     [
         # bad input image type cases
         (
@@ -124,5 +124,6 @@ def test_detectors_give_proper_error_for_bad_input_image(
 def test_detector_docs_name_the_errors_for_a_bad_input_image(detect):
     """See: https://github.com/gerlichlab/spotfishing/issues/20"""
     doc = detect.__doc__
-    assert "TypeError" in doc and "DimensionalityError" in doc
+    assert "TypeError" in doc
+    assert "DimensionalityError" in doc
     assert ("`transform`" in doc) == (detect is detect_spots_dog)

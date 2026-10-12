@@ -1,14 +1,17 @@
 """Abstraction over the result of application of a spot detection procedure to an input image"""
 
+from collections.abc import Iterable
 from dataclasses import dataclass
 from enum import Enum
-from typing import TYPE_CHECKING, Iterable, Union
+from typing import TYPE_CHECKING, Union
 
 from numpydoc_decorator import doc
 
 if TYPE_CHECKING:
     import numpy.typing as npt
     import pandas as pd
+
+    from ._types import FloatImage, NumpyInt, PixelValue
 
 from ._constants import (
     ROI_AREA_KEY,
@@ -17,7 +20,6 @@ from ._constants import (
     ROI_MEAN_INTENSITY_KEY_CAMEL_CASE,
 )
 from ._exceptions import DimensionalityError
-from ._types import FloatImage, NumpyInt, PixelValue
 
 __author__ = "Vince Reuter"
 __all__ = ["DetectionResult"]
@@ -31,14 +33,13 @@ class RoiCenterKeys(Enum):
     X = "xc"
 
     @classmethod
-    def to_list(cls) -> list[str]:  # pylint: disable=missing-function-docstring
+    def to_list(cls) -> list[str]:
         return [m.value for m in cls]
 
 
 # how to rename columns arising from extraction from skimage.measure.regionprops_table, to better suit downstream analysis
-SPOT_DETECTION_COLUMN_RENAMING: tuple[tuple[str, str], ...] = tuple(
-    (f"{ROI_CENTROID_KEY}-{i}", c) for i, c in enumerate(RoiCenterKeys.to_list())
-) + (
+SPOT_DETECTION_COLUMN_RENAMING: tuple[tuple[str, str], ...] = (
+    *((f"{ROI_CENTROID_KEY}-{i}", c) for i, c in enumerate(RoiCenterKeys.to_list())),
     (ROI_AREA_KEY, ROI_AREA_KEY),
     (ROI_MEAN_INTENSITY_KEY, ROI_MEAN_INTENSITY_KEY_CAMEL_CASE),
 )
@@ -59,7 +60,7 @@ DETECTION_RESULT_TABLE_COLUMNS = [new for _, new in SPOT_DETECTION_COLUMN_RENAMI
     ),
 )
 @dataclass(frozen=True, kw_only=True)
-class DetectionResult:  # pylint: disable=missing-class-docstring
+class DetectionResult:  # noqa: D101
     table: "pd.DataFrame"
     image: "Union[npt.NDArray[PixelValue], FloatImage]"
     labels: "npt.NDArray[NumpyInt]"
@@ -70,7 +71,7 @@ class DetectionResult:  # pylint: disable=missing-class-docstring
         cols = list(self.table.columns)
         if cols != DETECTION_RESULT_TABLE_COLUMNS:
             errors.append(IllegalDetectionResultTableColumns(observed_columns=cols))
-        if self.image.ndim != 3:
+        if self.image.ndim != 3:  # noqa: PLR2004
             errors.append(
                 DimensionalityError(
                     f"{self.image.ndim}-dimensional (not 3!) image in spot detection result wrapper"
