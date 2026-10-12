@@ -27,6 +27,7 @@ pkgs.mkShell {
     poetryWithPlugins
     py311
     python312
+    python313
   ] ++ (if dev then [
     # The pyright package from PyPI runs on Node.js; providing it here saves a download.
     pkgs.nodejs
