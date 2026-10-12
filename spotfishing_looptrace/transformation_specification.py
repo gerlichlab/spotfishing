@@ -1,6 +1,7 @@
 """Difference of Gaussians transformation for spot detection with looptrace"""
 
 import json
+import math
 from dataclasses import dataclass
 from functools import partial
 from pathlib import Path
@@ -15,6 +16,7 @@ from spotfishing._types import Image, ImageEndomorphism
 from spotfishing.dog_transform import (
     DifferenceOfGaussiansTransformation,
     PostDifferenceTransformation,
+    is_numeric,
 )
 
 __author__ = "Vince Reuter"
@@ -39,6 +41,10 @@ Numeric = Union[float, int]
         standardise=common_params.standardise,
     ),
     returns="A parameterised instance built according to the specification of the arguments provided here",
+    raises=dict(
+        TypeError="If sigma_post_divide is given but isn't a number",
+        ValueError="If sigma_post_divide is given but isn't a finite number above 0",
+    ),
 )
 @dataclass(frozen=True, kw_only=True)
 class DifferenceOfGaussiansSpecificationForLooptrace:
@@ -47,6 +53,20 @@ class DifferenceOfGaussiansSpecificationForLooptrace:
     sigma_wide: Numeric
     sigma_post_divide: Optional[Numeric]
     standardise: bool
+
+    def __post_init__(self) -> None:
+        # Checked here, since a bad value would otherwise fail only deep inside detection, or,
+        # for 0 or NaN, find no spots, without an error.
+        if self.sigma_post_divide is None:
+            return
+        if not is_numeric(self.sigma_post_divide):
+            raise TypeError(
+                f"sigma_post_divide must be a number, not {type(self.sigma_post_divide).__name__}: {self.sigma_post_divide!r}"
+            )
+        if not math.isfinite(self.sigma_post_divide) or self.sigma_post_divide <= 0:
+            raise ValueError(
+                f"sigma_post_divide must be a finite number above 0, not {self.sigma_post_divide}"
+            )
 
     # @doc(summary="Build the DoG transformation from this specification.")
     @property
@@ -58,7 +78,9 @@ class DifferenceOfGaussiansSpecificationForLooptrace:
             else None
         )
         post: Optional[PostDifferenceTransformation] = (
-            None if self.sigma_post_divide is None else partial(div_by_gauss, sigma=3)
+            None
+            if self.sigma_post_divide is None
+            else partial(div_by_gauss, sigma=self.sigma_post_divide)
         )
         return DifferenceOfGaussiansTransformation(
             pre_diff=pre,

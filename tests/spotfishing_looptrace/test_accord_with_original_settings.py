@@ -1,6 +1,7 @@
 """Tests for maintaining accordance with original, fixed settings, as flexibility is added"""
 
 import importlib.resources as importlib_resources
+from dataclasses import replace
 from functools import partial
 from pathlib import Path
 
@@ -89,3 +90,31 @@ def test_output_is_correct_with_original_settings(
     print("OBSERVED (below):")
     print(obs_table)
     assert_frame_equal(obs_table, exp_table)
+
+
+@pytest.mark.parametrize("data_name", ["p0_t57_c0", "p13_t57_c0"])
+def test_sigma_post_divide_sets_the_blur_the_image_is_divided_by(data_name):
+    """The blur after differencing uses the specification's sigma, not a fixed 3.
+
+    See: https://github.com/gerlichlab/spotfishing/issues/17
+    """
+    img = load_image_file(f"img__{data_name}__smaller.npy")
+    original = ORIGINAL_LOOPTRACE_DOG_SPECIFICATION.transformation(img)
+    five = replace(ORIGINAL_LOOPTRACE_DOG_SPECIFICATION, sigma_post_divide=5)
+    assert not (five.transformation(img) == original).all()
+
+
+@pytest.mark.parametrize(
+    ("sigma", "error"),
+    [
+        ("3", TypeError),
+        (-1, ValueError),
+        (0, ValueError),
+        (float("nan"), ValueError),
+        (float("inf"), ValueError),
+    ],
+)
+def test_sigma_post_divide_must_be_a_finite_number_above_0(sigma, error):
+    """A bad sigma_post_divide is refused when the specification is built, not deep in detection."""
+    with pytest.raises(error, match="sigma_post_divide"):
+        replace(ORIGINAL_LOOPTRACE_DOG_SPECIFICATION, sigma_post_divide=sigma)
