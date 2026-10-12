@@ -6,7 +6,6 @@
   dev ? true,
 }:
 let 
-  py310 = pkgs.python310;
   py311 = pkgs.python311;
   poetryExtras = if dev then ["dev"] else [];
   poetryInstallExtras = (
@@ -20,7 +19,6 @@ pkgs.mkShell {
     pkgs.zlib
     pkgs.stdenv.cc.cc.lib
     poetry
-    py310
     py311
   ] ++ (if dev then [ pkgs.poetryPlugins.poetry-plugin-export ] else []);
   shellHook = ''
@@ -28,7 +26,7 @@ pkgs.mkShell {
     # https://stackoverflow.com/questions/74438817/poetry-failed-to-unlock-the-collection
     # https://github.com/python-poetry/poetry/issues/1917
     export PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring
-    poetry env use "${py310}/bin/python"
+    poetry env use "${py311}/bin/python"
     export LD_LIBRARY_PATH="${pkgs.zlib}/lib:${pkgs.stdenv.cc.cc.lib}/lib"
     poetry install -vv --sync${poetryInstallExtras}
     source "$(poetry env info --path)/bin/activate"

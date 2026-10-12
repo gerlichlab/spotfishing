@@ -11,7 +11,6 @@ repository = "https://github.com/gerlichlab/spotfishing"
 classifiers = [
     "Development Status :: 1 - Planning",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Topic :: Scientific/Engineering :: Bio-Informatics",    
@@ -25,7 +24,7 @@ include = ["examples"]
 
 [tool.poetry.dependencies]
 # These are the main runtime dependencies.
-python = ">= 3.10.0, < 3.13"
+python = ">= 3.11, < 3.13"
 gertils = { git = "https://github.com/gerlichlab/gertils.git", tag = "v0.6.1" }
 numpy = "^1.24.2"
 numpydoc_decorator = "^2.2.1"
@@ -88,7 +87,7 @@ pytest-cov = "^5.0.0"
 python-type-stubs = { git = "https://github.com/gerlichlab/python-type-stubs", tag = "v0.1.0" }
 
 [tool.black]
-target-version = ["py310"]
+target-version = ["py311"]
 
 [tool.codespell]
 skip = ".git,,.nox,.vscode,__pycache__,pyproject.toml,poetry.lock"
@@ -125,7 +124,7 @@ strict_optional = true
 
 [tool.pylint]
 main.jobs = 4
-main.py-version = "3.10"
+main.py-version = "3.11"
 reports.output-format = "colorized"
 "messages control".disable = "logging-fstring-interpolation,unspecified-encoding,wildcard-import,use-dict-literal,fixme,wrong-import-position,line-too-long,no-name-in-module"
 
