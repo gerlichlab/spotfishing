@@ -75,7 +75,7 @@ class DetectionResult:  # pylint: disable=missing-class-docstring
         if self.image.ndim != 3:
             errors.append(
                 DimensionalityError(
-                    "{self.image.ndim}-dimensional (not 3!) image in spot detection result wrapper"
+                    f"{self.image.ndim}-dimensional (not 3!) image in spot detection result wrapper"
                 )
             )
         if errors:
