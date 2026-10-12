@@ -18,6 +18,8 @@ pkgs.mkShell {
   buildInputs = with pkgs; [
     pkgs.zlib
     pkgs.stdenv.cc.cc.lib
+    # The pyright package from PyPI runs pyright on Node.js.
+    nodejs
     poetry
     py311
   ] ++ (if dev then [ pkgs.poetryPlugins.poetry-plugin-export ] else []);

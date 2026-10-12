@@ -2,9 +2,9 @@
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import TYPE_CHECKING, Iterable
+from typing import TYPE_CHECKING, Iterable, Union
 
-from numpydoc_decorator import doc  # type: ignore[import-untyped]
+from numpydoc_decorator import doc
 
 if TYPE_CHECKING:
     import numpy.typing as npt
@@ -17,7 +17,7 @@ from ._constants import (
     ROI_MEAN_INTENSITY_KEY_CAMEL_CASE,
 )
 from ._exceptions import DimensionalityError
-from ._types import NumpyInt, PixelValue
+from ._types import FloatImage, NumpyInt, PixelValue
 
 __author__ = "Vince Reuter"
 __all__ = ["DetectionResult"]
@@ -63,7 +63,7 @@ DETECTION_RESULT_TABLE_COLUMNS = [new for _, new in SPOT_DETECTION_COLUMN_RENAMI
 @dataclass(frozen=True, kw_only=True)
 class DetectionResult:  # pylint: disable=missing-class-docstring
     table: "pd.DataFrame"
-    image: "npt.NDArray[PixelValue]"
+    image: "Union[npt.NDArray[PixelValue], FloatImage]"
     labels: "npt.NDArray[NumpyInt]"
 
     def __post_init__(self) -> None:

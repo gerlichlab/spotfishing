@@ -1,14 +1,14 @@
 """Image processing related to spot detection, but to be run first"""
 
 from dataclasses import dataclass
-from typing import Optional, Protocol, Union
+from typing import Optional, Protocol, Union, get_args
 
 import numpy as np
-from numpydoc_decorator import doc  # type: ignore[import-untyped]
-from skimage.filters import gaussian as gaussian_filter
+from numpydoc_decorator import doc
 
+from ._skimage import gaussian as gaussian_filter
 from ._transformation_parameters import common_params
-from ._types import Image, ImageEndomorphism, NumpyFloat, NumpyInt
+from ._types import FloatImage, Image, ImageEndomorphism, NumpyFloat, NumpyInt
 
 __author__ = "Vince Reuter"
 __credits__ = ["Vince Reuter"]
@@ -21,7 +21,7 @@ Numeric = Union[float, int, NumpyFloat, NumpyInt]
 class PostDifferenceTransformation(
     Protocol
 ):  # pylint: disable=too-few-public-methods,missing-class-docstring
-    def __call__(self, *, old_img: Image, new_img: Image) -> Image:
+    def __call__(self, *, old_img: Image, new_img: FloatImage) -> FloatImage:
         ...
 
 
@@ -75,10 +75,10 @@ class DifferenceOfGaussiansTransformation:  # pylint: disable=missing-class-docs
         parameters=dict(input_image="The image (array of pixel values) to preprocess"),
         returns="The array of values after transformations' application",
     )
-    def __call__(self, input_image: Image) -> Image:
+    def __call__(self, input_image: Image) -> FloatImage:
         img = self.pre_diff(input_image) if self.pre_diff is not None else input_image
-        img_narrow = gaussian_filter(img, self.sigma_narrow)
-        img_wide = gaussian_filter(img, self.sigma_wide)
+        img_narrow = gaussian_filter(img, float(self.sigma_narrow))
+        img_wide = gaussian_filter(img, float(self.sigma_wide))
         img = img_narrow - img_wide
         if self.post_diff is not None:
             img = self.post_diff(old_img=input_image, new_img=img)
@@ -90,4 +90,4 @@ class DifferenceOfGaussiansTransformation:  # pylint: disable=missing-class-docs
     parameters=dict(obj="Object to test for membership in a numeric type"),
 )
 def is_numeric(obj: object) -> bool:  # pylint: disable=missing-function-docstring
-    return isinstance(obj, Numeric)  # type: ignore
+    return isinstance(obj, get_args(Numeric))

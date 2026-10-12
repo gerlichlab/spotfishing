@@ -3,6 +3,7 @@
 from functools import partial
 
 import hypothesis as hyp
+import hypothesis.strategies as st
 import numpy as np
 import numpy.testing as np_test
 import pandas as pd
@@ -18,8 +19,8 @@ __credits__ = ["Vince Reuter"]
 
 
 # Generators for dummy numpy arrays to use as input in test cases
-gen_small_image_side_length = hyp.strategies.integers(min_value=0, max_value=10)
-gen_dims_for_small_image = hyp.strategies.tuples(
+gen_small_image_side_length = st.integers(min_value=0, max_value=10)
+gen_dims_for_small_image = st.tuples(
     gen_small_image_side_length,
     gen_small_image_side_length,
     gen_small_image_side_length,
@@ -105,8 +106,8 @@ def test_simple_intensity_detector_result_always_contains_original_image(input_i
     ],
 )
 @hyp.given(
-    threshold=hyp.strategies.integers(min_value=0, max_value=10000),
-    pixel_expansion=hyp.strategies.integers(min_value=0, max_value=100),
+    threshold=st.integers(min_value=0, max_value=10000),
+    pixel_expansion=st.integers(min_value=0, max_value=100),
 )
 def test_detectors_give_proper_error_for_bad_input_image(
     detect,

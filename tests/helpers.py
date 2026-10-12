@@ -24,4 +24,4 @@ def get_img_data_file(fn: str) -> Path:
 
 def load_image_file(fn: str) -> np.ndarray:
     """Load an input image from disk, with the given name and stored in test data inputs folder."""
-    return np.load(get_img_data_file(fn))  # type: ignore
+    return np.load(get_img_data_file(fn))

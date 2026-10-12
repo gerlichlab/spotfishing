@@ -1,20 +1,18 @@
 """Different spot detection implementations"""
 
 from dataclasses import dataclass
-from typing import Optional, Tuple, Union
+from typing import Optional, Tuple, Union, cast
 
 import numpy as np
 import numpy.typing as npt
 import pandas as pd
-from numpydoc_decorator import doc  # type: ignore[import-untyped]
+from numpydoc_decorator import doc
 from scipy import ndimage as ndi
-from skimage.measure import regionprops_table
-from skimage.morphology import remove_small_objects
-from skimage.segmentation import expand_labels
 from typing_extensions import Annotated, Doc
 
 from ._constants import ROI_AREA_KEY, ROI_CENTROID_KEY, ROI_MEAN_INTENSITY_KEY
 from ._exceptions import DimensionalityError
+from ._skimage import expand_labels, regionprops_table, remove_small_objects
 from ._types import NumpyInt, PixelValue
 from .detection_result import (
     SKIMAGE_REGIONPROPS_TABLE_COLUMNS_EXPANDED,
@@ -73,12 +71,13 @@ def detect_spots_dog(  # pylint: disable=missing-function-docstring
     # TODO: consider replacing by something from scikit-image.
     # See: https://github.com/gerlichlab/spotfishing/issues/5
     _check_input_image(input_image)
-    if not isinstance(transform, DifferenceOfGaussiansTransformation):
+    # Checked at run time, since callers may pass any type despite the annotation.
+    if not isinstance(cast("object", transform), DifferenceOfGaussiansTransformation):
         raise TypeError(
             f"For DoG-based detection, the transformation must be of type {DifferenceOfGaussiansTransformation.__name__}; got {type(transform).__name__}"
         )
     img = transform(input_image)
-    labels, _ = ndi.label(img > spot_threshold)  # type: ignore[attr-defined]
+    labels, _ = _label(img > spot_threshold)
     spot_props, labels = _build_props_table(
         labels=labels, input_image=input_image, expand_px=expand_px
     )
@@ -100,14 +99,28 @@ def detect_spots_int(  # pylint: disable=missing-function-docstring
 ) -> detection_signature.result:
     _check_input_image(input_image)
     binary = input_image > spot_threshold
-    binary = ndi.binary_fill_holes(binary)  # type: ignore[attr-defined]
-    struct = ndi.generate_binary_structure(input_image.ndim, 2)  # type: ignore[attr-defined]
-    labels, num_obj = ndi.label(binary, structure=struct)  # type: ignore[attr-defined]
+    binary = ndi.binary_fill_holes(binary)
+    struct = ndi.generate_binary_structure(input_image.ndim, 2)
+    labels, num_obj = _label(binary, structure=struct)
     labels = remove_small_objects(labels, min_size=5) if num_obj > 1 else labels
     spot_props, labels = _build_props_table(
         labels=labels, input_image=input_image, expand_px=expand_px
     )
     return DetectionResult(table=spot_props, image=input_image, labels=labels)
+
+
+def _label(
+    mask: npt.NDArray[np.bool_],
+    structure: Optional[npt.NDArray[np.bool_]] = None,
+) -> Tuple[npt.NDArray[NumpyInt], int]:
+    """Label the connected regions of a mask, and count them.
+
+    scipy returns both only when it is handed no array to write the labels into, as here;
+    with one, it returns the count alone.
+    """
+    return cast(
+        "tuple[npt.NDArray[NumpyInt], int]", ndi.label(mask, structure=structure)
+    )
 
 
 def _build_props_table(
@@ -117,7 +130,7 @@ def _build_props_table(
     expand_px: Optional[Numeric],
 ) -> Tuple[pd.DataFrame, npt.NDArray[NumpyInt]]:
     if expand_px:
-        labels = expand_labels(labels, expand_px)  # type: ignore[no-untyped-call]
+        labels = expand_labels(labels, expand_px)
     if np.all(labels == 0):
         # No substructures (ROIs) exist.
         spot_props = pd.DataFrame(columns=SKIMAGE_REGIONPROPS_TABLE_COLUMNS_EXPANDED)
@@ -139,7 +152,8 @@ def _build_props_table(
 
 
 def _check_input_image(img: npt.NDArray[PixelValue]) -> None:
-    if not isinstance(img, np.ndarray):
+    # Checked at run time, since callers may pass any type despite the annotation.
+    if not isinstance(cast("object", img), np.ndarray):
         raise TypeError(
             f"Expected numpy array for input image but got {type(img).__name__}"
         )

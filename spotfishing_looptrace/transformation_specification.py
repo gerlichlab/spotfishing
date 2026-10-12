@@ -7,12 +7,13 @@ from functools import partial
 from pathlib import Path
 from typing import Optional, Union
 
-from numpydoc_decorator import doc  # type: ignore[import-untyped]
-from skimage.filters import gaussian as gaussian_filter
-from skimage.morphology import ball, white_tophat
+from numpydoc_decorator import doc
 
+from spotfishing._skimage import ball
+from spotfishing._skimage import gaussian as gaussian_filter
+from spotfishing._skimage import white_tophat
 from spotfishing._transformation_parameters import common_params
-from spotfishing._types import Image, ImageEndomorphism
+from spotfishing._types import FloatImage, Image, ImageEndomorphism
 from spotfishing.dog_transform import (
     DifferenceOfGaussiansTransformation,
     PostDifferenceTransformation,
@@ -122,10 +123,10 @@ class DifferenceOfGaussiansSpecificationForLooptrace:  # pylint: disable=missing
     returns="The transformed image",
 )
 def div_by_gauss(  # pylint: disable=missing-function-docstring
-    *, old_img: Image, new_img: Image, sigma: Numeric
-) -> Image:
+    *, old_img: Image, new_img: FloatImage, sigma: Numeric
+) -> FloatImage:
     # https://git.embl.de/grp-ellenberg/looptrace/-/blob/master/looptrace/image_processing_functions.py?ref_type=heads#L252
-    return new_img / gaussian_filter(old_img, sigma)  # type: ignore[no-any-return]
+    return new_img / gaussian_filter(old_img, sigma)
 
 
 # original parameterisation of the transformation for detection with DoG

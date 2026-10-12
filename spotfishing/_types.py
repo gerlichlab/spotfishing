@@ -1,6 +1,6 @@
 """Aliases for numeric types"""
 
-from typing import Callable, Union
+from typing import Any, Callable, Union
 
 import numpy as np
 import numpy.typing as npt
@@ -8,10 +8,13 @@ import numpy.typing as npt
 __author__ = "Vince Reuter"
 __credits__ = ["Vince Reuter"]
 
-__all__ = ["NumpyInt", "NumpyFloat", "PixelValue"]
+__all__ = ["FloatImage", "NumpyInt", "NumpyFloat", "PixelValue"]
 
 
 Image = npt.NDArray["PixelValue"]
+
+# What filtering an image gives: its pixels as floating-point numbers.
+FloatImage = npt.NDArray[np.floating[Any]]
 
 ImageEndomorphism = Callable[[Image], Image]
 

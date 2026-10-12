@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Iterable
 
 import nox
+import nox.virtualenv
 
 PYTHON_VERSIONS = ["3.11", "3.12"]
 TESTS_SUBFOLDER = "tests"
@@ -99,7 +100,7 @@ def tests(session):
 @nox.session(python=PYTHON_VERSIONS)
 def lint(session):
     install_groups(session, include=["lint"])
-    session.run("mypy")
+    session.run("pyright")
     session.run("pylint", PACKAGE_NAME, LOOPTRACE_PACKAGE_NAME)
     extra_warnings_to_disable_for_tests_subfolder = [
         "invalid-name",

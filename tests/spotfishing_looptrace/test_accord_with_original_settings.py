@@ -39,7 +39,8 @@ def test_original_settings_from_json():
         / "examples"
         / "original__difference_of_gaussians.json"
     )
-    obs = DifferenceOfGaussiansSpecificationForLooptrace.from_json_file(data_file)
+    with importlib_resources.as_file(data_file) as path:
+        obs = DifferenceOfGaussiansSpecificationForLooptrace.from_json_file(path)
     assert obs == ORIGINAL_LOOPTRACE_DOG_SPECIFICATION
 
 
