@@ -26,13 +26,6 @@ __author__ = "Vince Reuter"
 __credits__ = ["Vince Reuter"]
 
 
-# original pixel expansion setting for detection with DoG
-ORIGINAL_DOG_EXPAND_PX = 10
-
-# original pixel expansion setting for detection with simple intensity threshold
-ORIGINAL_DOG_EXPAND_PX = 1
-
-
 @pytest.mark.parametrize("as_given", [Path, str])
 def test_original_settings_from_json(as_given):
     data_file = (
