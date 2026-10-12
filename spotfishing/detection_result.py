@@ -44,9 +44,7 @@ SPOT_DETECTION_COLUMN_RENAMING: tuple[tuple[str, str], ...] = tuple(
 )
 
 # the sequence of columns of fields extracted from skimage.measure.regionprops_table, after accounting for expansion in multiple dimensions (e.g., centroid_weighted)
-SKIMAGE_REGIONPROPS_TABLE_COLUMNS_EXPANDED = [
-    old for old, _ in SPOT_DETECTION_COLUMN_RENAMING
-]
+SKIMAGE_REGIONPROPS_TABLE_COLUMNS_EXPANDED = [old for old, _ in SPOT_DETECTION_COLUMN_RENAMING]
 
 # the expected column names in a detection result table, after extraction and renaming
 DETECTION_RESULT_TABLE_COLUMNS = [new for _, new in SPOT_DETECTION_COLUMN_RENAMING]

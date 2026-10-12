@@ -118,9 +118,7 @@ def _label(
     scipy returns both only when it is handed no array to write the labels into, as here;
     with one, it returns the count alone.
     """
-    return cast(
-        "tuple[npt.NDArray[NumpyInt], int]", ndi.label(mask, structure=structure)
-    )
+    return cast("tuple[npt.NDArray[NumpyInt], int]", ndi.label(mask, structure=structure))
 
 
 def _build_props_table(
@@ -154,10 +152,6 @@ def _build_props_table(
 def _check_input_image(img: npt.NDArray[PixelValue]) -> None:
     # Checked at run time, since callers may pass any type despite the annotation.
     if not isinstance(cast("object", img), np.ndarray):
-        raise TypeError(
-            f"Expected numpy array for input image but got {type(img).__name__}"
-        )
+        raise TypeError(f"Expected numpy array for input image but got {type(img).__name__}")
     if img.ndim != 3:
-        raise DimensionalityError(
-            f"Expected 3D input image but got {img.ndim}-dimensional"
-        )
+        raise DimensionalityError(f"Expected 3D input image but got {img.ndim}-dimensional")

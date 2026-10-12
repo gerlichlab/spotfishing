@@ -9,9 +9,8 @@ from typing import Optional, Union
 
 from numpydoc_decorator import doc
 
-from spotfishing._skimage import ball
+from spotfishing._skimage import ball, white_tophat
 from spotfishing._skimage import gaussian as gaussian_filter
-from spotfishing._skimage import white_tophat
 from spotfishing._transformation_parameters import common_params
 from spotfishing._types import FloatImage, Image, ImageEndomorphism
 from spotfishing.dog_transform import (
@@ -74,9 +73,7 @@ class DifferenceOfGaussiansSpecificationForLooptrace:  # pylint: disable=missing
         """Build the DoG transformation from this specification."""
         # https://git.embl.de/grp-ellenberg/looptrace/-/blob/master/looptrace/image_processing_functions.py?ref_type=heads#L252
         pre: Optional[ImageEndomorphism] = (
-            partial(white_tophat, footprint=ball(2))
-            if self.apply_white_tophat
-            else None
+            partial(white_tophat, footprint=ball(2)) if self.apply_white_tophat else None
         )
         post: Optional[PostDifferenceTransformation] = (
             None
@@ -93,7 +90,8 @@ class DifferenceOfGaussiansSpecificationForLooptrace:  # pylint: disable=missing
 
     @classmethod
     def from_json_file(
-        cls, fp: Path  # pylint: disable=invalid-name
+        cls,
+        fp: Path,  # pylint: disable=invalid-name
     ) -> "DifferenceOfGaussiansSpecificationForLooptrace":
         """Build an instance from parameters in a JSON file.
 

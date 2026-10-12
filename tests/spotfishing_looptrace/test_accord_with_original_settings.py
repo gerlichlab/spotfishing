@@ -73,12 +73,8 @@ def test_original_settings_from_json():
 def test_output_is_correct_with_original_settings(
     data_name, detect, func_type_name, threshold, expand_px
 ):
-    exp_name = (
-        f"expect__spots_table__{func_type_name}__threshold_{threshold}__{data_name}.csv"
-    )
-    exp_path = (
-        Path(__file__).parent.parent / "data" / "outputs__original_settings" / exp_name
-    )
+    exp_name = f"expect__spots_table__{func_type_name}__threshold_{threshold}__{data_name}.csv"
+    exp_path = Path(__file__).parent.parent / "data" / "outputs__original_settings" / exp_name
     exp_table = pd.read_csv(exp_path, index_col=0)
 
     arr_name = f"img__{data_name}__smaller.npy"

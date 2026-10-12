@@ -125,21 +125,13 @@ def lint(session):
 def format(session):
     install_groups(session, include=["format"], include_self=False)
     session.run("codespell", "--enable-colors")
-    session.run(
-        "isort",
-        PACKAGE_NAME,
-        LOOPTRACE_PACKAGE_NAME,
-        TESTS_SUBFOLDER,
-        "--check",
-        "--diff",
-        "--color",
-    )
-    session.run("black", ".", "--check", "--diff", "--color")
+    session.run("ruff", "check", "--select=I", "--diff")
+    session.run("ruff", "format", "--check", "--diff")
 
 
 @nox.session
 def reformat(session):
     install_groups(session, include=["format"], include_self=False)
     session.run("codespell", "--write-changes")
-    session.run("isort", PACKAGE_NAME, LOOPTRACE_PACKAGE_NAME, TESTS_SUBFOLDER)
-    session.run("black", ".")
+    session.run("ruff", "check", "--select=I", "--fix")
+    session.run("ruff", "format")

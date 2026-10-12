@@ -31,9 +31,7 @@ gen_empty_small_image = gen_dims_for_small_image.map(lambda dims: np.empty(shape
 # detection function, threshold setting, and pixel expansion setting
 BASE_INTENSITY_BUNDLE = (detect_spots_int, 300, 1)
 BASE_DOG_BUNDLE = (
-    partial(
-        detect_spots_dog, transform=ORIGINAL_LOOPTRACE_DOG_SPECIFICATION.transformation
-    ),
+    partial(detect_spots_dog, transform=ORIGINAL_LOOPTRACE_DOG_SPECIFICATION.transformation),
     15,
     10,
 )

@@ -15,10 +15,7 @@ Record: TypeAlias = Series | Mapping[str, object]
     summary="Get region centroid from data row.",
     parameters=dict(rec="The data corresponding to a record from a file."),
     raises=dict(
-        KeyError=(
-            "If any of the required keys to parse coordinates isn't present in given"
-            " row."
-        )
+        KeyError="If any of the required keys to parse coordinates isn't present in given row."
     ),
     returns="Coordinates which define a point in a 3D image.",
 )

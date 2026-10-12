@@ -18,11 +18,8 @@ __all__ = ["DifferenceOfGaussiansTransformation"]
 Numeric = Union[float, int, NumpyFloat, NumpyInt]
 
 
-class PostDifferenceTransformation(
-    Protocol
-):  # pylint: disable=too-few-public-methods,missing-class-docstring
-    def __call__(self, *, old_img: Image, new_img: FloatImage) -> FloatImage:
-        ...
+class PostDifferenceTransformation(Protocol):  # pylint: disable=too-few-public-methods,missing-class-docstring
+    def __call__(self, *, old_img: Image, new_img: FloatImage) -> FloatImage: ...
 
 
 @doc(
