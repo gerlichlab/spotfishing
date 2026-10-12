@@ -47,7 +47,7 @@ Numeric = Union[float, int]
     ),
 )
 @dataclass(frozen=True, kw_only=True)
-class DifferenceOfGaussiansSpecificationForLooptrace:
+class DifferenceOfGaussiansSpecificationForLooptrace:  # pylint: disable=missing-class-docstring
     apply_white_tophat: bool
     sigma_narrow: Numeric
     sigma_wide: Numeric
@@ -68,9 +68,9 @@ class DifferenceOfGaussiansSpecificationForLooptrace:
                 f"sigma_post_divide must be a finite number above 0, not {self.sigma_post_divide}"
             )
 
-    # @doc(summary="Build the DoG transformation from this specification.")
     @property
     def transformation(self) -> "DifferenceOfGaussiansTransformation":
+        """Build the DoG transformation from this specification."""
         # https://git.embl.de/grp-ellenberg/looptrace/-/blob/master/looptrace/image_processing_functions.py?ref_type=heads#L252
         pre: Optional[ImageEndomorphism] = (
             partial(white_tophat, footprint=ball(2))
@@ -90,20 +90,25 @@ class DifferenceOfGaussiansSpecificationForLooptrace:
             standardise=self.standardise,
         )
 
-    # @doc(
-    #     summary="Build an instance from parameters in a JSON file.",
-    #     parameters=dict(
-    #         fp="Path to the file to parse for parameters",
-    #     ),
-    #     returns="A newly constructed instance, parameterised according to the data in the given config file",
-    #     see_also=":meth:`DifferenceOfGaussiansTransformation.build`",
-    # )
     @classmethod
     def from_json_file(
-        cls, fp: Path
+        cls, fp: Path  # pylint: disable=invalid-name
     ) -> "DifferenceOfGaussiansSpecificationForLooptrace":
-        with open(fp, "r") as fh:
-            data = json.load(fh)
+        """Build an instance from parameters in a JSON file.
+
+        Parameters
+        ----------
+        fp
+            Path to the file to parse for parameters.
+
+        Returns
+        -------
+        DifferenceOfGaussiansSpecificationForLooptrace
+            A newly constructed instance, parameterised according to the data in the
+            given config file.
+        """
+        with open(fp, "r") as handle:
+            data = json.load(handle)
         return cls(**data)
 
 
@@ -116,7 +121,9 @@ class DifferenceOfGaussiansSpecificationForLooptrace:
     ),
     returns="The transformed image",
 )
-def div_by_gauss(*, old_img: Image, new_img: Image, sigma: Numeric) -> Image:
+def div_by_gauss(  # pylint: disable=missing-function-docstring
+    *, old_img: Image, new_img: Image, sigma: Numeric
+) -> Image:
     # https://git.embl.de/grp-ellenberg/looptrace/-/blob/master/looptrace/image_processing_functions.py?ref_type=heads#L252
     return new_img / gaussian_filter(old_img, sigma)  # type: ignore[no-any-return]
 

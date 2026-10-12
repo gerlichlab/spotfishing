@@ -9,6 +9,7 @@ import nox
 PYTHON_VERSIONS = ["3.10", "3.11"]
 TESTS_SUBFOLDER = "tests"
 PACKAGE_NAME = "spotfishing"
+LOOPTRACE_PACKAGE_NAME = "spotfishing_looptrace"
 
 
 def install_groups(
@@ -99,7 +100,7 @@ def tests(session):
 def lint(session):
     install_groups(session, include=["lint"])
     session.run("mypy")
-    session.run("pylint", PACKAGE_NAME)
+    session.run("pylint", PACKAGE_NAME, LOOPTRACE_PACKAGE_NAME)
     extra_warnings_to_disable_for_tests_subfolder = [
         "invalid-name",
         "missing-function-docstring",
