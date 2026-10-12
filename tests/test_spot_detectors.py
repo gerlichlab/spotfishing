@@ -119,3 +119,11 @@ def test_detectors_give_proper_error_for_bad_input_image(
     with pytest.raises(expected_error_type) as err_ctx:
         detect(input_image, spot_threshold=threshold, expand_px=pixel_expansion)
     assert str(err_ctx.value) == expected_message
+
+
+@pytest.mark.parametrize("detect", [detect_spots_dog, detect_spots_int])
+def test_detector_docs_name_the_errors_for_a_bad_input_image(detect):
+    """See: https://github.com/gerlichlab/spotfishing/issues/20"""
+    doc = detect.__doc__
+    assert "TypeError" in doc and "DimensionalityError" in doc
+    assert ("`transform`" in doc) == (detect is detect_spots_dog)

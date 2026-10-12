@@ -59,7 +59,8 @@ class detection_signature:  # pylint: disable=invalid-name,missing-class-docstri
         transform="The subtraction-after-smoothing parameterisation that defined DoG",
     ),
     raises=dict(
-        TypeError="If the given `transform` isn't specifically a `DifferenceOfGaussiansTransformation`",
+        TypeError="If `input_image` isn't a numpy array, or the given `transform` isn't specifically a `DifferenceOfGaussiansTransformation`",
+        DimensionalityError="If `input_image` isn't 3D",
     ),
 )
 def detect_spots_dog(  # pylint: disable=missing-function-docstring
@@ -85,9 +86,10 @@ def detect_spots_dog(  # pylint: disable=missing-function-docstring
 
 
 @doc(
-    summary="Detect spots by a simply pixel value threshold.",
+    summary="Detect spots by a simple pixel value threshold.",
     raises=dict(
-        TypeError="If the given `transform` isn't specifically a `DifferenceOfGaussiansTransformation`",
+        TypeError="If `input_image` isn't a numpy array",
+        DimensionalityError="If `input_image` isn't 3D",
     ),
 )
 def detect_spots_int(  # pylint: disable=missing-function-docstring
