@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "spotfishing"
-version = "0.3.3"
+version = "0.4.0"
 description = "Detecting spots in FISH images"
 authors = [
     "Vince Reuter <vince.reuter@gmail.com>",
@@ -11,9 +11,9 @@ repository = "https://github.com/gerlichlab/spotfishing"
 classifiers = [
     "Development Status :: 1 - Planning",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Scientific/Engineering :: Bio-Informatics",    
     "Typing :: Typed",
 ]
@@ -25,13 +25,14 @@ include = ["examples"]
 
 [tool.poetry.dependencies]
 # These are the main runtime dependencies.
-python = ">= 3.10.0, < 3.13"
-gertils = { git = "https://github.com/gerlichlab/gertils.git", tag = "v0.6.1" }
-numpy = "^1.24.2"
+python = ">= 3.11, < 3.14"
+gertils = { git = "https://github.com/gerlichlab/gertils.git", tag = "v0.7.0" }
+numpy = ">=1.24.2,<3"
 numpydoc_decorator = "^2.2.1"
-pandas = "^1.5.3"
+pandas = ">=1.5.3,<3"
 scikit-image = ">=0.20.0"
 scipy = "^1.10.1"
+typing-extensions = ">=4.9"
 
 [tool.poetry.group.nox]
 optional = true
@@ -52,21 +53,21 @@ optional = true
 
 [tool.poetry.group.lint.dependencies]
 hypothesis = "^6.68.2"
-mypy = "^1.9.0"
+pyright = "^1.1.411"
 nox = "^2022.11.21"
 pandas-stubs = "^2.2.0.240218"
-pylint = "^2.15.8"
 pytest = "^7.1.0"
-python-type-stubs = { git = "https://github.com/gerlichlab/python-type-stubs", tag = "v0.1.0" }
+ruff = "==0.7.4"
+# With its scipy extra, scipy-stubs requires the scipy release it describes.
+scipy-stubs = { version = ">=1.15", extras = ["scipy"] }
 
 [tool.poetry.group.format]
 optional = true
 
 [tool.poetry.group.format.dependencies]
-black = "^22"
-colorama = "^0.4.6"
-isort = ">=5.10,<5.12.0"
 codespell = "^2.2.2"
+# The version looptrace pins, so the two projects are formatted and linted by the same ruff.
+ruff = "==0.7.4"
 
 [tool.poetry.group.dev]
 optional = true
@@ -74,20 +75,16 @@ optional = true
 [tool.poetry.group.dev.dependencies]
 # The dev group is for developers' convenience. 
 # Consider each new dependency to another group as a dev group candidate.
-black = "^22"
 codespell = "^2.2.2"
-colorama = "^0.4.6"
 hypothesis = "^6.68.2"
-mypy = "^1.9.0"
+pyright = "^1.1.411"
 nox = "^2022.11.21"
 pandas-stubs = "^2.2.0.240218"
-pylint = "^2.15.8"
 pytest = "^7.1.0"
 pytest-cov = "^5.0.0"
-python-type-stubs = { git = "https://github.com/gerlichlab/python-type-stubs", tag = "v0.1.0" }
-
-[tool.black]
-target-version = ["py310"]
+ruff = "==0.7.4"
+# With its scipy extra, scipy-stubs requires the scipy release it describes.
+scipy-stubs = { version = ">=1.15", extras = ["scipy"] }
 
 [tool.codespell]
 skip = ".git,,.nox,.vscode,__pycache__,pyproject.toml,poetry.lock"
@@ -96,37 +93,93 @@ ignore-words-list = "jupyter,iff"  # prevent jupyter -> jupiter, iff -> if
 check-filenames = true
 uri-ignore-words-list = "*" # prevent spelling correction in URL-like values.
 
-[tool.isort]
-profile = "black"
+[tool.pytest.ini_options]
+# Tests import their shared helpers module from the tests folder, wherever pytest starts from.
+pythonpath = ["tests"]
 
-[tool.mypy]
-files = ['*.py', 'spotfishing/*.py', 'spotfishing_looptrace/*.py', 'tests/*.py']
-warn_redundant_casts = true
-warn_unused_ignores = true
-warn_return_any = true
-warn_unreachable = true
+[tool.pyright]
+include = ["spotfishing", "spotfishing_looptrace", "tests", "noxfile.py"]
+# The packages get strict checking; the tests and the noxfile get the standard level.
+strict = ["spotfishing", "spotfishing_looptrace"]
+reportUnnecessaryTypeIgnoreComment = "error"
 
-[[tool.mypy.overrides]]
-module = [
-    "spotfishing.*",
-    "spotfishing_looptrace.*"
+[tool.ruff]
+# Black uses line-length = 88, but allows exceptions when breaking the line
+# would lead to other rule violations. Use 100 as a maximum hard limit:
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    # Missing members
+    "ANN10",  # Deprecated: Missing type annotation for self/cls in (class)method
+    "D105",  # Missing docstring in magic method
+    "ANN204", # Missing return type annotation for special method
+
+    # Opinionated syntax
+    "D203", # Ignore this to instead opt for class body or docstring to possibly start right away under class.
+    "D213", # Ignore this to instead opt for summary part of docstring to be on first physical line.
+    "TRY003", # Avoid specifying long messages outside the exception class
+    "C408",  # Unnecessary `dict` call (rewrite as a literal)
+    "EM",  # Exception must not use a (f-)string literal, assign to variable first
+    "FIX002",  # Line contains TODO, consider resolving the issue
+    "D400",  # First line should end with a period
+    "D415",  # First line should end with a period, question mark, or exclamation point
+    "N818",  # Exception should be named with an Error suffix
+
+    # Imports and type annotations
+    "FA100",  # Missing `from __future__ import annotations`, but uses `typing.*`
+    "TCH002",  # Move third-party import `...` into a type-checking block
+    "TCH003",  # Move standard library import `...` into a type-checking block
+    "UP007",  # Use `X | Y` for type annotations
+
+    # Ruff recommends avoiding these checks when using `ruff format`. Since
+    # `ruff format` is a drop-in replacement for `black`, we avoid the same
+    # checks here (https://docs.astral.sh/ruff/formatter/#conflicting-lint-rules
+    # has more details):
+    "W191",  # tab-indentation
+    "E111",  # indentation-with-invalid-multiple
+    "E114",  # indentation-with-invalid-multiple-comment
+    "E117",  # over-indented
+    "D206",  # indent-with-spaces
+    "D300",  # triple-single-quotes
+    "Q000",  # bad-quotes-inline-string
+    "Q001",  # bad-quotes-multiline-string
+    "Q002",  # bad-quotes-docstring
+    "Q003",  # avoidable-escaped-quote
+    "COM812",  # missing-trailing-comma
+    "COM819",  # prohibited-trailing-comma
+    "ISC001",  # single-line-implicit-string-concatenation
+    "ISC002",  # multi-line-implicit-string-concatenation
+    "E501",  # line-too-long
 ]
-disallow_untyped_defs = true
-disallow_untyped_calls = true
-disallow_incomplete_defs = true
-check_untyped_defs = true
-disallow_any_unimported = true
-disallow_any_explicit = true
-disallow_any_generics = true
-disallow_subclassing_any = true
-implicit_optional = false
-strict_optional = true
 
-[tool.pylint]
-main.jobs = 4
-main.py-version = "3.10"
-reports.output-format = "colorized"
-"messages control".disable = "logging-fstring-interpolation,unspecified-encoding,wildcard-import,use-dict-literal,fixme,wrong-import-position,line-too-long,no-name-in-module"
+[tool.ruff.lint.per-file-ignores]
+"spotfishing/__init__.py" = [
+    # The check of the installed versions runs before the imports that would fail.
+    "E402",  # Module level import not at top of file
+]
+"typings/*" = [
+    # Stubs copy the signatures of third-party code, which we can't change.
+    "FBT001",  # Boolean-typed positional argument in function definition
+    "FBT002",  # Boolean default positional argument in function definition
+    "PLR0913",  # Too many arguments in function definition
+]
+"tests/*" = [
+    # Ignore some groups of checks in our test code.
+    "ANN",  # Type annotations
+    "D10",  # Missing docstrings
+    "TCH00",  # Imports and type checking blocks
+    "INP001", # File `...` is part of an implicit namespace package. Add an `__init__.py`.
+
+    # Ignore some more specific checks in our test code.
+    "D401",  # First line of docstring should be in imperative mood
+    "N802",  # Function name `...` should be lowercase
+    "S101",  # Use of `assert` detected
+    "PLR0913",  # Too many arguments in function definition: a parametrized test takes one per parameter.
+    "T201",  # `print` found: pytest shows what a failing test printed, such as the tables it compared.
+]
 
 [build-system]
 requires = ["poetry-core"]

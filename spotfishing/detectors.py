@@ -1,20 +1,18 @@
 """Different spot detection implementations"""
 
 from dataclasses import dataclass
-from typing import Optional, Tuple, Union
+from typing import Annotated, Optional, Union, cast
 
 import numpy as np
 import numpy.typing as npt
 import pandas as pd
-from numpydoc_decorator import doc  # type: ignore[import-untyped]
+from numpydoc_decorator import doc
 from scipy import ndimage as ndi
-from skimage.measure import regionprops_table
-from skimage.morphology import remove_small_objects
-from skimage.segmentation import expand_labels
-from typing_extensions import Annotated, Doc
+from typing_extensions import Doc
 
 from ._constants import ROI_AREA_KEY, ROI_CENTROID_KEY, ROI_MEAN_INTENSITY_KEY
 from ._exceptions import DimensionalityError
+from ._skimage import expand_labels, regionprops_table, remove_small_objects
 from ._types import NumpyInt, PixelValue
 from .detection_result import (
     SKIMAGE_REGIONPROPS_TABLE_COLUMNS_EXPANDED,
@@ -33,7 +31,7 @@ Numeric = Union[int, float]
 
 @doc(summary="Parameter descriptions common to various spot detection procedures")
 @dataclass(frozen=True)
-class detection_signature:  # pylint: disable=invalid-name,missing-class-docstring
+class detection_signature:  # noqa: N801
     image = Annotated[npt.NDArray[PixelValue], Doc("3D image in which to detect spots")]
     threshold = Annotated[
         Numeric,
@@ -59,25 +57,27 @@ class detection_signature:  # pylint: disable=invalid-name,missing-class-docstri
         transform="The subtraction-after-smoothing parameterisation that defined DoG",
     ),
     raises=dict(
-        TypeError="If the given `transform` isn't specifically a `DifferenceOfGaussiansTransformation`",
+        TypeError="If `input_image` isn't a numpy array, or the given `transform` isn't specifically a `DifferenceOfGaussiansTransformation`",
+        DimensionalityError="If `input_image` isn't 3D",
     ),
 )
-def detect_spots_dog(  # pylint: disable=missing-function-docstring
+def detect_spots_dog(  # noqa: D103
     input_image: detection_signature.image,
     *,
     spot_threshold: detection_signature.threshold,
     expand_px: detection_signature.expand_px,
     transform: DifferenceOfGaussiansTransformation,
 ) -> detection_signature.result:
-    # TODO: consider replacing by something from scikit-image.
-    # See: https://github.com/gerlichlab/spotfishing/issues/5
+    # Something from scikit-image, such as skimage.feature.blob_dog, could replace this; see
+    # https://github.com/gerlichlab/spotfishing/issues/5
     _check_input_image(input_image)
-    if not isinstance(transform, DifferenceOfGaussiansTransformation):
+    # Checked at run time, since callers may pass any type despite the annotation.
+    if not isinstance(cast("object", transform), DifferenceOfGaussiansTransformation):
         raise TypeError(
             f"For DoG-based detection, the transformation must be of type {DifferenceOfGaussiansTransformation.__name__}; got {type(transform).__name__}"
         )
     img = transform(input_image)
-    labels, _ = ndi.label(img > spot_threshold)  # type: ignore[attr-defined]
+    labels, _ = _label(img > spot_threshold)
     spot_props, labels = _build_props_table(
         labels=labels, input_image=input_image, expand_px=expand_px
     )
@@ -85,12 +85,13 @@ def detect_spots_dog(  # pylint: disable=missing-function-docstring
 
 
 @doc(
-    summary="Detect spots by a simply pixel value threshold.",
+    summary="Detect spots by a simple pixel value threshold.",
     raises=dict(
-        TypeError="If the given `transform` isn't specifically a `DifferenceOfGaussiansTransformation`",
+        TypeError="If `input_image` isn't a numpy array",
+        DimensionalityError="If `input_image` isn't 3D",
     ),
 )
-def detect_spots_int(  # pylint: disable=missing-function-docstring
+def detect_spots_int(  # noqa: D103
     input_image: detection_signature.image,
     *,
     spot_threshold: detection_signature.threshold,
@@ -98,14 +99,27 @@ def detect_spots_int(  # pylint: disable=missing-function-docstring
 ) -> detection_signature.result:
     _check_input_image(input_image)
     binary = input_image > spot_threshold
-    binary = ndi.binary_fill_holes(binary)  # type: ignore[attr-defined]
-    struct = ndi.generate_binary_structure(input_image.ndim, 2)  # type: ignore[attr-defined]
-    labels, num_obj = ndi.label(binary, structure=struct)  # type: ignore[attr-defined]
-    labels = remove_small_objects(labels, min_size=5) if num_obj > 1 else labels
+    binary = ndi.binary_fill_holes(binary)
+    struct = ndi.generate_binary_structure(input_image.ndim, 2)
+    labels, num_obj = _label(binary, structure=struct)
+    # Objects of 5 pixels or fewer go, the rule looptrace has used since scikit-image 0.26.
+    labels = remove_small_objects(labels, max_size=5) if num_obj > 1 else labels
     spot_props, labels = _build_props_table(
         labels=labels, input_image=input_image, expand_px=expand_px
     )
     return DetectionResult(table=spot_props, image=input_image, labels=labels)
+
+
+def _label(
+    mask: npt.NDArray[np.bool_],
+    structure: Optional[npt.NDArray[np.bool_]] = None,
+) -> tuple[npt.NDArray[NumpyInt], int]:
+    """Label the connected regions of a mask, and count them.
+
+    scipy returns both only when it is handed no array to write the labels into, as here;
+    with one, it returns the count alone.
+    """
+    return cast("tuple[npt.NDArray[NumpyInt], int]", ndi.label(mask, structure=structure))
 
 
 def _build_props_table(
@@ -113,9 +127,9 @@ def _build_props_table(
     labels: npt.NDArray[NumpyInt],
     input_image: npt.NDArray[PixelValue],
     expand_px: Optional[Numeric],
-) -> Tuple[pd.DataFrame, npt.NDArray[NumpyInt]]:
+) -> tuple[pd.DataFrame, npt.NDArray[NumpyInt]]:
     if expand_px:
-        labels = expand_labels(labels, expand_px)  # type: ignore[no-untyped-call]
+        labels = expand_labels(labels, expand_px)
     if np.all(labels == 0):
         # No substructures (ROIs) exist.
         spot_props = pd.DataFrame(columns=SKIMAGE_REGIONPROPS_TABLE_COLUMNS_EXPANDED)
@@ -137,11 +151,8 @@ def _build_props_table(
 
 
 def _check_input_image(img: npt.NDArray[PixelValue]) -> None:
-    if not isinstance(img, np.ndarray):
-        raise TypeError(
-            f"Expected numpy array for input image but got {type(img).__name__}"
-        )
-    if img.ndim != 3:
-        raise DimensionalityError(
-            f"Expected 3D input image but got {img.ndim}-dimensional"
-        )
+    # Checked at run time, since callers may pass any type despite the annotation.
+    if not isinstance(cast("object", img), np.ndarray):
+        raise TypeError(f"Expected numpy array for input image but got {type(img).__name__}")
+    if img.ndim != 3:  # noqa: PLR2004
+        raise DimensionalityError(f"Expected 3D input image but got {img.ndim}-dimensional")

@@ -1,6 +1,7 @@
 """Tests for maintaining accordance with original, fixed settings, as flexibility is added"""
 
 import importlib.resources as importlib_resources
+from dataclasses import replace
 from functools import partial
 from pathlib import Path
 
@@ -25,25 +26,20 @@ __author__ = "Vince Reuter"
 __credits__ = ["Vince Reuter"]
 
 
-# original pixel expansion setting for detection with DoG
-ORIGINAL_DOG_EXPAND_PX = 10
-
-# original pixel expansion setting for detection with simple intensity threshold
-ORIGINAL_DOG_EXPAND_PX = 1
-
-
-def test_original_settings_from_json():
+@pytest.mark.parametrize("as_given", [Path, str])
+def test_original_settings_from_json(as_given):
     data_file = (
         importlib_resources.files(spotfishing_looptrace)
         / "examples"
         / "original__difference_of_gaussians.json"
     )
-    obs = DifferenceOfGaussiansSpecificationForLooptrace.from_json_file(data_file)
+    with importlib_resources.as_file(data_file) as path:
+        obs = DifferenceOfGaussiansSpecificationForLooptrace.from_json_file(as_given(path))
     assert obs == ORIGINAL_LOOPTRACE_DOG_SPECIFICATION
 
 
 @pytest.mark.parametrize(
-    ["detect", "func_type_name", "threshold", "expand_px"],
+    ("detect", "func_type_name", "threshold", "expand_px"),
     [
         pytest.param(
             detect,
@@ -71,21 +67,45 @@ def test_original_settings_from_json():
 def test_output_is_correct_with_original_settings(
     data_name, detect, func_type_name, threshold, expand_px
 ):
-    exp_name = (
-        f"expect__spots_table__{func_type_name}__threshold_{threshold}__{data_name}.csv"
-    )
-    exp_path = (
-        Path(__file__).parent.parent / "data" / "outputs__original_settings" / exp_name
-    )
+    exp_name = f"expect__spots_table__{func_type_name}__threshold_{threshold}__{data_name}.csv"
+    exp_path = Path(__file__).parent.parent / "data" / "outputs__original_settings" / exp_name
     exp_table = pd.read_csv(exp_path, index_col=0)
 
     arr_name = f"img__{data_name}__smaller.npy"
     input_image = load_image_file(arr_name)
     obs = detect(input_image, spot_threshold=threshold, expand_px=expand_px)
-    obs_table = obs.table[RoiCenterKeys.to_list() + [ROI_MEAN_INTENSITY_KEY_CAMEL_CASE]]
+    obs_table = obs.table[[*RoiCenterKeys.to_list(), ROI_MEAN_INTENSITY_KEY_CAMEL_CASE]]
 
     print("EXPECTED (below):")
     print(exp_table)
     print("OBSERVED (below):")
     print(obs_table)
     assert_frame_equal(obs_table, exp_table)
+
+
+@pytest.mark.parametrize("data_name", ["p0_t57_c0", "p13_t57_c0"])
+def test_sigma_post_divide_sets_the_blur_the_image_is_divided_by(data_name):
+    """The blur after differencing uses the specification's sigma, not a fixed 3.
+
+    See: https://github.com/gerlichlab/spotfishing/issues/17
+    """
+    img = load_image_file(f"img__{data_name}__smaller.npy")
+    original = ORIGINAL_LOOPTRACE_DOG_SPECIFICATION.transformation(img)
+    five = replace(ORIGINAL_LOOPTRACE_DOG_SPECIFICATION, sigma_post_divide=5)
+    assert not (five.transformation(img) == original).all()
+
+
+@pytest.mark.parametrize(
+    ("sigma", "error"),
+    [
+        ("3", TypeError),
+        (-1, ValueError),
+        (0, ValueError),
+        (float("nan"), ValueError),
+        (float("inf"), ValueError),
+    ],
+)
+def test_sigma_post_divide_must_be_a_finite_number_above_0(sigma, error):
+    """A bad sigma_post_divide is refused when the specification is built, not deep in detection."""
+    with pytest.raises(error, match="sigma_post_divide"):
+        replace(ORIGINAL_LOOPTRACE_DOG_SPECIFICATION, sigma_post_divide=sigma)

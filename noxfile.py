@@ -1,13 +1,13 @@
 """Declaration of Nox commands which can be run for this package"""
 
 import hashlib
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable
 
 import nox
+import nox.virtualenv
 
-PYTHON_VERSIONS = ["3.10", "3.11"]
-TESTS_SUBFOLDER = "tests"
+PYTHON_VERSIONS = ["3.11", "3.12", "3.13"]
 PACKAGE_NAME = "spotfishing"
 
 
@@ -27,8 +27,8 @@ def install_groups(
     Instead, use `poetry export` with suitable options to generate a requirements.txt
     file to pass to session.install().
 
-    Auto-skip the `poetry export` step if the poetry.lock file is unchanged
-    (matching hash) since the last time this session was run.
+    Auto-skip the `poetry export` step if neither the poetry.lock file nor the export
+    command has changed (matching hash) since the last time this session was run.
     """
     if isinstance(session.virtualenv, nox.virtualenv.PassthroughEnv):
         session.warn(
@@ -39,34 +39,26 @@ def install_groups(
         return
 
     lockdata = Path("poetry.lock").read_bytes()
-    digest = hashlib.blake2b(lockdata).hexdigest()
     requirements_txt = Path(session.cache_dir, session.name, "reqs_from_poetry.txt")
+    argv = [
+        "poetry",
+        "export",
+        "--format=requirements.txt",
+        # pip checks hashes for all requirements or none, and gertils, a git dependency, has
+        # none. So pip checks none here; CI and the Nix shell install with Poetry, which does.
+        "--without-hashes",
+        f"--output={requirements_txt}",
+    ]
+    if include:
+        option = "only" if not include_self else "with"
+        argv.append(f"--{option}={','.join(include)}")
+    # The export depends on the lock file and on the command, so a change to either renews it.
+    digest = hashlib.blake2b(lockdata + " ".join(argv).encode()).hexdigest()
     hashfile = requirements_txt.with_suffix(".hash")
 
     if not hashfile.is_file() or hashfile.read_text() != digest:
-        # First, adjust settings to avoid warning that we cover in shell.nix.
-        # See: https://python-poetry.org/blog/announcing-poetry-1.7.0/
-        argv = [
-            "poetry",
-            "config",
-            "warnings.export",
-            "false",
-        ]
-        session.debug(
-            f"Running command to silence warning since in Nix shell we install the patch: {' '.join(argv)}"
-        )
-        session.run_always(*argv, external=True)
         session.log(f"Will generate requirements hashfile: {hashfile}")
         requirements_txt.parent.mkdir(parents=True, exist_ok=True)
-        argv = [
-            "poetry",
-            "export",
-            "--format=requirements.txt",
-            f"--output={requirements_txt}",
-        ]
-        if include:
-            option = "only" if not include_self else "with"
-            argv.append(f"--{option}={','.join(include)}")
         session.debug(f"Running command: {' '.join(argv)}")
         session.run_always(*argv, external=True)
         session.debug(f"Writing requirements hashfile: {hashfile}")
@@ -82,7 +74,8 @@ def install_groups(
 
 
 @nox.session(python=PYTHON_VERSIONS)
-def tests(session):
+def tests(session: nox.Session) -> None:
+    """Run the tests."""
     install_groups(session, include=["test"])
     session.run(
         "pytest",
@@ -96,40 +89,26 @@ def tests(session):
 
 
 @nox.session(python=PYTHON_VERSIONS)
-def lint(session):
+def lint(session: nox.Session) -> None:
+    """Check the types with pyright and lint with ruff."""
     install_groups(session, include=["lint"])
-    session.run("mypy")
-    session.run("pylint", PACKAGE_NAME)
-    extra_warnings_to_disable_for_tests_subfolder = [
-        "invalid-name",
-        "missing-function-docstring",
-        "protected-access",
-        "redefined-outer-name",
-        "too-many-arguments",
-        "too-many-function-args",
-        "too-many-instance-attributes",
-        "too-many-lines",
-        "unused-argument",
-        "use-implicit-booleaness-not-comparison",
-    ]
-    session.run(
-        "pylint",
-        f"--disable={','.join(extra_warnings_to_disable_for_tests_subfolder)}",
-        TESTS_SUBFOLDER,
-    )
+    session.run("pyright")
+    session.run("ruff", "check")
 
 
-@nox.session
-def format(session):
+@nox.session(name="format")
+def check_format(session: nox.Session) -> None:
+    """Check the spelling, the order of the imports and the layout."""
     install_groups(session, include=["format"], include_self=False)
     session.run("codespell", "--enable-colors")
-    session.run("isort", PACKAGE_NAME, TESTS_SUBFOLDER, "--check", "--diff", "--color")
-    session.run("black", ".", "--check", "--diff", "--color")
+    session.run("ruff", "check", "--select=I", "--diff")
+    session.run("ruff", "format", "--check", "--diff")
 
 
 @nox.session
-def reformat(session):
+def reformat(session: nox.Session) -> None:
+    """Fix the spelling, the order of the imports and the layout."""
     install_groups(session, include=["format"], include_self=False)
     session.run("codespell", "--write-changes")
-    session.run("isort", PACKAGE_NAME, TESTS_SUBFOLDER)
-    session.run("black", ".")
+    session.run("ruff", "check", "--select=I", "--fix")
+    session.run("ruff", "format")
