@@ -36,7 +36,9 @@ def test_original_settings_from_json(as_given):
         / "original__difference_of_gaussians.json"
     )
     with importlib_resources.as_file(data_file) as path:
-        obs = DifferenceOfGaussiansSpecificationForLooptrace.from_json_file(as_given(path))
+        obs = DifferenceOfGaussiansSpecificationForLooptrace.from_json_file(
+            as_given(path)
+        )
     assert obs == ORIGINAL_LOOPTRACE_DOG_SPECIFICATION
 
 
@@ -69,8 +71,12 @@ def test_original_settings_from_json(as_given):
 def test_output_is_correct_with_original_settings(
     data_name, detect, func_type_name, threshold, expand_px
 ):
-    exp_name = f"expect__spots_table__{func_type_name}__threshold_{threshold}__{data_name}.csv"
-    exp_path = Path(__file__).parent.parent / "data" / "outputs__original_settings" / exp_name
+    exp_name = (
+        f"expect__spots_table__{func_type_name}__threshold_{threshold}__{data_name}.csv"
+    )
+    exp_path = (
+        Path(__file__).parent.parent / "data" / "outputs__original_settings" / exp_name
+    )
     exp_table = pd.read_csv(exp_path, index_col=0)
 
     arr_name = f"img__{data_name}__smaller.npy"
@@ -92,8 +98,8 @@ def test_sigma_post_divide_sets_the_blur_the_image_is_divided_by(data_name):
     See: https://github.com/gerlichlab/spotfishing/issues/17
     """
     img = load_image_file(f"img__{data_name}__smaller.npy")
-    # Unstandardised, the division is the last step, so dividing by the blur by hand must give
-    # exactly what the specification gives.
+    # Unstandardised, the division is the last step, so dividing by the blur by hand
+    # must give exactly what the specification gives.
     unstandardised = replace(ORIGINAL_LOOPTRACE_DOG_SPECIFICATION, standardise=False)
     undivided = replace(unstandardised, sigma_post_divide=None).transformation(img)
     divided = replace(unstandardised, sigma_post_divide=5).transformation(img)

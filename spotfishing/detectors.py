@@ -68,8 +68,8 @@ def detect_spots_dog(  # noqa: D103
     expand_px: detection_signature.expand_px,
     transform: DifferenceOfGaussiansTransformation,
 ) -> detection_signature.result:
-    # Something from scikit-image, such as skimage.feature.blob_dog, could replace this; see
-    # https://github.com/gerlichlab/spotfishing/issues/5
+    # Something from scikit-image, such as skimage.feature.blob_dog, could replace
+    # this; see https://github.com/gerlichlab/spotfishing/issues/5
     _check_input_image(input_image)
     # Checked at run time, since callers may pass any type despite the annotation.
     if not isinstance(cast("object", transform), DifferenceOfGaussiansTransformation):
@@ -102,8 +102,9 @@ def detect_spots_int(  # noqa: D103
     binary = ndi.binary_fill_holes(binary)
     struct = ndi.generate_binary_structure(input_image.ndim, 2)
     labels, num_obj = _label(binary, structure=struct)
-    # When there is more than one object, those of 5 pixels or fewer go: the rule looptrace has
-    # used since scikit-image 0.26. A single object stays, whatever its size.
+    # When there is more than one object, those of 5 pixels or fewer go: the rule
+    # looptrace has used since scikit-image 0.26. A single object stays, whatever its
+    # size.
     labels = remove_small_objects(labels, max_size=5) if num_obj > 1 else labels
     spot_props, labels = _build_props_table(
         labels=labels, input_image=input_image, expand_px=expand_px
@@ -117,10 +118,12 @@ def _label(
 ) -> tuple[npt.NDArray[NumpyInt], int]:
     """Label the connected regions of a mask, and count them.
 
-    scipy returns both only when it is handed no array to write the labels into, as here;
-    with one, it returns the count alone.
+    scipy returns both only when it is handed no array to write the labels into, as
+    here; with one, it returns the count alone.
     """
-    return cast("tuple[npt.NDArray[NumpyInt], int]", ndi.label(mask, structure=structure))
+    return cast(
+        "tuple[npt.NDArray[NumpyInt], int]", ndi.label(mask, structure=structure)
+    )
 
 
 def _build_props_table(
@@ -154,6 +157,10 @@ def _build_props_table(
 def _check_input_image(img: npt.NDArray[PixelValue]) -> None:
     # Checked at run time, since callers may pass any type despite the annotation.
     if not isinstance(cast("object", img), np.ndarray):
-        raise TypeError(f"Expected numpy array for input image but got {type(img).__name__}")
+        raise TypeError(
+            f"Expected numpy array for input image but got {type(img).__name__}"
+        )
     if img.ndim != 3:  # noqa: PLR2004
-        raise DimensionalityError(f"Expected 3D input image but got {img.ndim}-dimensional")
+        raise DimensionalityError(
+            f"Expected 3D input image but got {img.ndim}-dimensional"
+        )

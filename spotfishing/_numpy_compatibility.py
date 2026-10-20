@@ -1,12 +1,14 @@
 """A warning about releases installed with numpy 2 that were built for numpy 1.
 
-spotfishing allows numpy 1 and 2, and releases of pandas, scipy and scikit-image built for numpy 1
-only. Such a release fails to import with numpy 2, with an error about binary incompatibility that
-doesn't say what to do. pip installs that combination when something else holds one of those
-packages back, so the package checks the installed versions first and says which to upgrade.
+spotfishing allows numpy 1 and 2, and releases of pandas, scipy and scikit-image built
+for numpy 1 only. Such a release fails to import with numpy 2, with an error about
+binary incompatibility that doesn't say what to do. pip installs that combination when
+something else holds one of those packages back, so the package checks the installed
+versions first and says which to upgrade.
 
-The check runs when spotfishing is imported, so it helps only when spotfishing is imported before
-pandas, scipy and scikit-image. If one of them is imported first, its own import fails first.
+The check runs when spotfishing is imported, so it helps only when spotfishing is
+imported before pandas, scipy and scikit-image. If one of them is imported first, its
+own import fails first.
 """
 
 import importlib.metadata
@@ -15,8 +17,8 @@ import warnings
 
 __all__ = ["FIRST_RELEASES_FOR_NUMPY_2", "warn_of_releases_built_for_numpy_1"]
 
-# The first release of each package that was built against numpy 2, and so imports with numpy 1
-# and 2 alike. scikit-image 0.23.0 was yanked, for wheels that failed to upload.
+# The first release of each package that was built against numpy 2, and so imports with
+# numpy 1 and 2 alike. scikit-image 0.23.0 was yanked, for wheels that failed to upload.
 FIRST_RELEASES_FOR_NUMPY_2 = {
     "pandas": (2, 2, 2),
     "scipy": (1, 13, 0),
@@ -45,7 +47,9 @@ def warn_of_releases_built_for_numpy_1() -> None:
         except importlib.metadata.PackageNotFoundError:
             continue
         if _release(version) < first:
-            too_old.append(f"{package} {version} ({'.'.join(map(str, first))} or later works)")
+            too_old.append(
+                f"{package} {version} ({'.'.join(map(str, first))} or later works)"
+            )
     if too_old:
         warnings.warn(
             f"numpy {numpy} is installed with releases built for numpy 1, which fail to import "

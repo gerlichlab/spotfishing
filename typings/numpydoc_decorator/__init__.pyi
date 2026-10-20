@@ -1,8 +1,8 @@
 # Type information for numpydoc_decorator, which ships none.
 #
-# The decorator that `doc` returns attaches a docstring to the class or function it decorates,
-# and returns that same object. Annotated as returning a bare `Callable`, it would hide the type
-# of everything it decorates.
+# The decorator that `doc` returns attaches a docstring to the class or function it
+# decorates, and returns that same object. Annotated as returning a bare `Callable`, it
+# would hide the type of everything it decorates.
 
 from collections.abc import Callable, Mapping, Sequence
 from typing import TypeVar

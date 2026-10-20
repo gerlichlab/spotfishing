@@ -53,7 +53,8 @@ optional = true
 
 [tool.poetry.group.lint.dependencies]
 hypothesis = "^6.68.2"
-pyright = "^1.1.411"
+# The version looptrace pins, so the two projects are type-checked by the same pyright.
+pyright = "==1.1.411"
 nox = "^2022.11.21"
 pandas-stubs = "^2.2.0.240218"
 pytest = "^7.1.0"
@@ -77,7 +78,7 @@ optional = true
 # Consider each new dependency to another group as a dev group candidate.
 codespell = "^2.2.2"
 hypothesis = "^6.68.2"
-pyright = "^1.1.411"
+pyright = "==1.1.411"
 nox = "^2022.11.21"
 pandas-stubs = "^2.2.0.240218"
 pytest = "^7.1.0"
@@ -104,9 +105,7 @@ strict = ["spotfishing", "spotfishing_looptrace"]
 reportUnnecessaryTypeIgnoreComment = "error"
 
 [tool.ruff]
-# Black uses line-length = 88, but allows exceptions when breaking the line
-# would lead to other rule violations. Use 100 as a maximum hard limit:
-line-length = 100
+# No line-length: ruff's default of 88, as in the other repositories behind looptrace.
 target-version = "py311"
 
 [tool.ruff.lint]

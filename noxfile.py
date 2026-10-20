@@ -44,15 +44,17 @@ def install_groups(
         "poetry",
         "export",
         "--format=requirements.txt",
-        # pip checks hashes for all requirements or none, and gertils, a git dependency, has
-        # none. So pip checks none here; CI and the Nix shell install with Poetry, which does.
+        # pip checks hashes for all requirements or none, and gertils, a git
+        # dependency, has none. So pip checks none here; CI and the Nix shell install
+        # with Poetry, which does.
         "--without-hashes",
         f"--output={requirements_txt}",
     ]
     if include:
         option = "only" if not include_self else "with"
         argv.append(f"--{option}={','.join(include)}")
-    # The export depends on the lock file and on the command, so a change to either renews it.
+    # The export depends on the lock file and on the command, so a change to either
+    # renews it.
     digest = hashlib.blake2b(lockdata + " ".join(argv).encode()).hexdigest()
     hashfile = requirements_txt.with_suffix(".hash")
 

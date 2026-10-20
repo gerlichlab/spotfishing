@@ -55,19 +55,20 @@ class DifferenceOfGaussiansSpecificationForLooptrace:  # noqa: D101
     standardise: bool
 
     def __post_init__(self) -> None:
-        # Checked here, since a bad value would otherwise fail only deep inside detection, or,
-        # for 0 or NaN, find no spots, without an error.
-        if self.sigma_post_divide is None:
+        # Checked here, since a bad value would otherwise fail only deep inside
+        # detection, or, for 0 or NaN, find no spots, without an error.
+        sigma = self.sigma_post_divide
+        if sigma is None:
             return
-        # A bool is refused too: until sigma_post_divide set the blur, any value but None meant 3,
-        # true included, which would now quietly mean 1.
-        if isinstance(self.sigma_post_divide, bool) or not is_numeric(self.sigma_post_divide):
+        # A bool is refused too: until sigma_post_divide set the blur, any value but
+        # None meant 3, true included, which would now quietly mean 1.
+        if isinstance(sigma, bool) or not is_numeric(sigma):
             raise TypeError(
-                f"sigma_post_divide must be a number, not {type(self.sigma_post_divide).__name__}: {self.sigma_post_divide!r}"
+                f"sigma_post_divide must be a number, not {type(sigma).__name__}: {sigma!r}"
             )
-        if not math.isfinite(self.sigma_post_divide) or self.sigma_post_divide <= 0:
+        if not math.isfinite(sigma) or sigma <= 0:
             raise ValueError(
-                f"sigma_post_divide must be a finite number above 0, not {self.sigma_post_divide}"
+                f"sigma_post_divide must be a finite number above 0, not {sigma}"
             )
 
     @property
@@ -75,7 +76,9 @@ class DifferenceOfGaussiansSpecificationForLooptrace:  # noqa: D101
         """Build the DoG transformation from this specification."""
         # https://git.embl.de/grp-ellenberg/looptrace/-/blob/master/looptrace/image_processing_functions.py?ref_type=heads#L252
         pre: Optional[ImageEndomorphism] = (
-            partial(white_tophat, footprint=ball(2)) if self.apply_white_tophat else None
+            partial(white_tophat, footprint=ball(2))
+            if self.apply_white_tophat
+            else None
         )
         post: Optional[PostDifferenceTransformation] = (
             None
