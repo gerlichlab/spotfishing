@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 * `py.typed` markers, so that type checkers use the annotations of `spotfishing` and `spotfishing_looptrace`.
-* A warning, when spotfishing is imported, if numpy 2 is installed with a release of pandas, scipy or scikit-image built for numpy 1, which fails to import with it.
+* A warning, when spotfishing is imported, if numpy 2 is installed with a release of pandas, scipy or scikit-image built for numpy 1, which fails to import with it. It shows only when spotfishing is imported before them; otherwise their own import error comes first.
 
 ### Changed
 * Depend on `gertils` v0.7.0.

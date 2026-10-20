@@ -4,6 +4,9 @@ spotfishing allows numpy 1 and 2, and releases of pandas, scipy and scikit-image
 only. Such a release fails to import with numpy 2, with an error about binary incompatibility that
 doesn't say what to do. pip installs that combination when something else holds one of those
 packages back, so the package checks the installed versions first and says which to upgrade.
+
+The check runs when spotfishing is imported, so it helps only when spotfishing is imported before
+pandas, scipy and scikit-image. If one of them is imported first, its own import fails first.
 """
 
 import importlib.metadata
