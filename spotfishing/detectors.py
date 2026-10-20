@@ -102,7 +102,8 @@ def detect_spots_int(  # noqa: D103
     binary = ndi.binary_fill_holes(binary)
     struct = ndi.generate_binary_structure(input_image.ndim, 2)
     labels, num_obj = _label(binary, structure=struct)
-    # Objects of 5 pixels or fewer go, the rule looptrace has used since scikit-image 0.26.
+    # When there is more than one object, those of 5 pixels or fewer go: the rule looptrace has
+    # used since scikit-image 0.26. A single object stays, whatever its size.
     labels = remove_small_objects(labels, max_size=5) if num_obj > 1 else labels
     spot_props, labels = _build_props_table(
         labels=labels, input_image=input_image, expand_px=expand_px
