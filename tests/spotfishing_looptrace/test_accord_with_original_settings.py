@@ -5,6 +5,7 @@ from dataclasses import replace
 from functools import partial
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import pytest
 from helpers import load_image_file
@@ -17,6 +18,7 @@ from spotfishing import (
     detect_spots_dog,
     detect_spots_int,
 )
+from spotfishing._skimage import gaussian
 from spotfishing_looptrace import (
     ORIGINAL_LOOPTRACE_DOG_SPECIFICATION,
     DifferenceOfGaussiansSpecificationForLooptrace,
@@ -90,9 +92,12 @@ def test_sigma_post_divide_sets_the_blur_the_image_is_divided_by(data_name):
     See: https://github.com/gerlichlab/spotfishing/issues/17
     """
     img = load_image_file(f"img__{data_name}__smaller.npy")
-    original = ORIGINAL_LOOPTRACE_DOG_SPECIFICATION.transformation(img)
-    five = replace(ORIGINAL_LOOPTRACE_DOG_SPECIFICATION, sigma_post_divide=5)
-    assert not (five.transformation(img) == original).all()
+    # Unstandardised, the division is the last step, so dividing by the blur by hand must give
+    # exactly what the specification gives.
+    unstandardised = replace(ORIGINAL_LOOPTRACE_DOG_SPECIFICATION, standardise=False)
+    undivided = replace(unstandardised, sigma_post_divide=None).transformation(img)
+    divided = replace(unstandardised, sigma_post_divide=5).transformation(img)
+    np.testing.assert_array_equal(divided, undivided / gaussian(img, 5))
 
 
 @pytest.mark.parametrize(
