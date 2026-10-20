@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Declare `typing-extensions` as a dependency, since spotfishing imports it (#18).
 * Type-check with `pyright` instead of `mypy`, and format and lint with `ruff` instead of `black`, `isort` and `pylint` (#14). The checks now cover `spotfishing_looptrace` and its tests too (#9).
 * The Nix shell uses nixpkgs 26.05, with Poetry 2 (#16).
-* `DifferenceOfGaussiansSpecificationForLooptrace` refuses a `sigma_post_divide` that isn't a finite number above 0.
+* `DifferenceOfGaussiansSpecificationForLooptrace` refuses a `sigma_post_divide` that isn't a finite number above 0, or that is a bool, which used to mean 3 like any value but `null`.
 * `DifferenceOfGaussiansSpecificationForLooptrace.from_json_file` reads the file as UTF-8.
 
 ### Fixed

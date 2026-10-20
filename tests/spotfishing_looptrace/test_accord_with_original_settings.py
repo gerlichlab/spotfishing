@@ -99,6 +99,8 @@ def test_sigma_post_divide_sets_the_blur_the_image_is_divided_by(data_name):
     ("sigma", "error"),
     [
         ("3", TypeError),
+        (True, TypeError),
+        (False, TypeError),
         (-1, ValueError),
         (0, ValueError),
         (float("nan"), ValueError),

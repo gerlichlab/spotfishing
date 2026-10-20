@@ -42,7 +42,7 @@ Numeric = Union[float, int]
     ),
     returns="A parameterised instance built according to the specification of the arguments provided here",
     raises=dict(
-        TypeError="If sigma_post_divide is given but isn't a number",
+        TypeError="If sigma_post_divide is given but isn't a number, or is a bool",
         ValueError="If sigma_post_divide is given but isn't a finite number above 0",
     ),
 )
@@ -59,7 +59,9 @@ class DifferenceOfGaussiansSpecificationForLooptrace:  # noqa: D101
         # for 0 or NaN, find no spots, without an error.
         if self.sigma_post_divide is None:
             return
-        if not is_numeric(self.sigma_post_divide):
+        # A bool is refused too: until sigma_post_divide set the blur, any value but None meant 3,
+        # true included, which would now quietly mean 1.
+        if isinstance(self.sigma_post_divide, bool) or not is_numeric(self.sigma_post_divide):
             raise TypeError(
                 f"sigma_post_divide must be a number, not {type(self.sigma_post_divide).__name__}: {self.sigma_post_divide!r}"
             )
