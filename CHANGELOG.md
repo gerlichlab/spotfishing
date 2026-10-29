@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.4.1] - 2026-10-29
+
+### Changed
+* Allow pandas 3. The tests pass on Python 3.12 with pandas 3.0.6 and 3.1.0, numpy 2.5.4, scipy 1.18.1 and scikit-image 0.26.0, with future and deprecation warnings raised as errors. The lock has pandas 3.1, so CI tests it on Python 3.11 to 3.13.
+
+### Fixed
+* `detect_spots_dog` and `detect_spots_int` no longer pass `inplace` to `DataFrame.rename`, which pandas 3.1 deprecates: with pandas 3.1, every detection warned with a `Pandas4Warning`, and pandas 4 removes the keyword.
+
 ## [v0.4.0] - 2026-10-12
 
 ### Added
