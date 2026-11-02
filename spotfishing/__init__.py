@@ -11,7 +11,7 @@ from ._constants import ROI_AREA_KEY, ROI_MEAN_INTENSITY_KEY_CAMEL_CASE
 # Importable from the package, though __all__ leaves it out; the alias tells pyright
 # it is re-exported.
 from ._constants import (
-    ROI_MEAN_INTENSITY_KEY as ROI_MEAN_INTENSITY_KEY,  # noqa: PLC0414
+    ROI_MEAN_INTENSITY_KEY as ROI_MEAN_INTENSITY_KEY,
 )
 from ._exceptions import DimensionalityError
 from .detection_result import DetectionResult, RoiCenterKeys
@@ -24,10 +24,10 @@ __credits__ = ["Vince Reuter", "Kai Sandoval Beckwith"]
 __all__ = [
     "ROI_AREA_KEY",
     "ROI_MEAN_INTENSITY_KEY_CAMEL_CASE",  # Only export this (not the snake case one).
+    "DetectionResult",
     "DifferenceOfGaussiansTransformation",
     "DimensionalityError",
     "RoiCenterKeys",
-    "DetectionResult",
     "detect_spots_dog",
     "detect_spots_int",
 ]

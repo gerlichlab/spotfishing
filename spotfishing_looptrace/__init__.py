@@ -9,6 +9,6 @@ __author__ = "Vince Reuter"
 __credits__ = ["Vince Reuter"]
 
 __all__ = [
-    "DifferenceOfGaussiansSpecificationForLooptrace",
     "ORIGINAL_LOOPTRACE_DOG_SPECIFICATION",
+    "DifferenceOfGaussiansSpecificationForLooptrace",
 ]
