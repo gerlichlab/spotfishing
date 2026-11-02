@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+* `spotfishing.__version__`, the package's version, as gertils and the napari plugins have it.
+
 ### Changed
 * Depend on `gertils` v0.8.0, which requires zarr 3. spotfishing reads no zarr data itself.
 See [looptrace issue 579](https://github.com/gerlichlab/looptrace/issues/579), which moves looptrace to zarr 3.

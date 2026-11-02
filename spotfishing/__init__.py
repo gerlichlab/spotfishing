@@ -14,6 +14,7 @@ from .dog_transform import DifferenceOfGaussiansTransformation
 
 __author__ = "Vince Reuter"
 __credits__ = ["Vince Reuter", "Kai Sandoval Beckwith"]
+__version__ = "0.4.1"
 
 __all__ = [
     "ROI_AREA_KEY",
