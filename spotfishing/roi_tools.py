@@ -1,7 +1,6 @@
 """Tools for working with spots/ROIs"""
 
 from collections.abc import Mapping
-from typing import TypeAlias
 
 from gertils.geometry import ImagePoint3D
 from numpydoc_decorator import doc
@@ -9,7 +8,7 @@ from pandas import Series
 
 from .detection_result import RoiCenterKeys
 
-Record: TypeAlias = Series | Mapping[str, object]
+type Record = Series | Mapping[str, object]
 
 
 @doc(

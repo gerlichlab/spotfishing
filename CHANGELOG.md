@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Removed
+* Support for Python 3.11. spotfishing requires Python 3.12 or 3.13, as gertils v0.8.0 does, and the newest releases of numpy, zarr and numcodecs. looptrace already requires Python 3.12. CI, the nox sessions and the Nix shell use Python 3.12 and 3.13, and ruff targets Python 3.12: `Record` in `spotfishing.roi_tools` is a `type` alias.
+
 ## [v0.4.1] - 2026-10-29
 
 ### Changed

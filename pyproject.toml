@@ -11,7 +11,6 @@ repository = "https://github.com/gerlichlab/spotfishing"
 classifiers = [
     "Development Status :: 1 - Planning",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Topic :: Scientific/Engineering :: Bio-Informatics",    
@@ -25,7 +24,7 @@ include = ["examples"]
 
 [tool.poetry.dependencies]
 # These are the main runtime dependencies.
-python = ">= 3.11, < 3.14"
+python = ">= 3.12, < 3.14"
 gertils = { git = "https://github.com/gerlichlab/gertils.git", tag = "v0.7.0" }
 numpy = ">=1.24.2,<3"
 numpydoc_decorator = "^2.2.1"
@@ -107,7 +106,7 @@ reportUnnecessaryTypeIgnoreComment = "error"
 
 [tool.ruff]
 # No line-length: ruff's default of 88, as in the other repositories behind looptrace.
-target-version = "py311"
+target-version = "py312"
 
 [tool.ruff.lint]
 select = ["ALL"]
