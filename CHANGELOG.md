@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+* Depend on `gertils` v0.8.0, which requires zarr 3. spotfishing reads no zarr data itself.
+See [looptrace issue 579](https://github.com/gerlichlab/looptrace/issues/579), which moves looptrace to zarr 3.
 * ruff 0.7.4 -> 0.17.3 and pyright 1.1.411 -> 1.1.414, the newest releases, as in looptrace, gertils and the napari plugins. The configuration names the rules that ruff renamed (`TC002`, `TC003`), no longer names those it removed (`ANN101`, `ANN102`), and ignores two that every rule now brings in: a copyright notice in each file (`CPY001`), as the LICENSE covers them all, and `X | None` for `Optional[X]` (`UP045`), which ruff split out of `UP007`, already ignored. In the tests, a test's count of positional parameters (`PLR0917`) is ignored as their count of parameters already was, since pytest passes them by name. ruff sorts four `__all__` lists, one `noqa` that hid nothing goes, and the generic functions of `spotfishing._skimage` declare their own type parameters. pyright 1.1.414 finds nothing new.
 
 ### Removed

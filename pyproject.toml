@@ -25,7 +25,7 @@ include = ["examples"]
 [tool.poetry.dependencies]
 # These are the main runtime dependencies.
 python = ">= 3.12, < 3.14"
-gertils = { git = "https://github.com/gerlichlab/gertils.git", tag = "v0.7.0" }
+gertils = { git = "https://github.com/gerlichlab/gertils.git", tag = "v0.8.0" }
 numpy = ">=1.24.2,<3"
 numpydoc_decorator = "^2.2.1"
 pandas = ">=1.5.3,<4"
