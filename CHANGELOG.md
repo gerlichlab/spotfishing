@@ -10,10 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Depend on `gertils` v0.8.0, which requires zarr 3. spotfishing reads no zarr data itself.
 See [looptrace issue 579](https://github.com/gerlichlab/looptrace/issues/579), which moves looptrace to zarr 3.
 * The lock has dask 2026.8.0, as gertils v0.8.0's does: the dask it had, 2023.12.1, can't read zarr 3 stores. It also has numpy 2.5.4 and scipy 1.18.1, which it held back to releases that install on Python 3.11.
+* The minimum versions are numpy 1.26, pandas 2.2.2, scipy 1.13 and scikit-image 0.26 (#22, #26). pandas 2.2.2 and scipy 1.13 are their first releases built for numpy 2, and scikit-image 0.26 is later than its first, 0.23.1, so that no release built for numpy 1, which fails to import with numpy 2, can be installed with spotfishing. scikit-image 0.26 is also the first whose `remove_small_objects` takes `max_size`. numpy 1.26 is gertils v0.8.0's minimum. The old minimums had no wheels for Python 3.12.
 * ruff 0.7.4 -> 0.17.3 and pyright 1.1.411 -> 1.1.414, the newest releases, as in looptrace, gertils and the napari plugins. The configuration names the rules that ruff renamed (`TC002`, `TC003`), no longer names those it removed (`ANN101`, `ANN102`), and ignores two that every rule now brings in: a copyright notice in each file (`CPY001`), as the LICENSE covers them all, and `X | None` for `Optional[X]` (`UP045`), which ruff split out of `UP007`, already ignored. In the tests, a test's count of positional parameters (`PLR0917`) is ignored as their count of parameters already was, since pytest passes them by name. ruff sorts four `__all__` lists, one `noqa` that hid nothing goes, and the generic functions of `spotfishing._skimage` declare their own type parameters. pyright 1.1.414 finds nothing new.
 
 ### Removed
 * Support for Python 3.11. spotfishing requires Python 3.12 or 3.13, as gertils v0.8.0 does, and the newest releases of numpy, zarr and numcodecs. looptrace already requires Python 3.12. CI, the nox sessions and the Nix shell use Python 3.12 and 3.13, and ruff targets Python 3.12.
+* The warning, when spotfishing is imported, of numpy 2 installed with a release of pandas, scipy or scikit-image built for numpy 1: the minimum versions rule that combination out.
 
 ## [v0.4.1] - 2026-10-29
 

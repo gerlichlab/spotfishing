@@ -26,11 +26,17 @@ include = ["examples"]
 # These are the main runtime dependencies.
 python = ">= 3.12, < 3.14"
 gertils = { git = "https://github.com/gerlichlab/gertils.git", tag = "v0.8.0" }
-numpy = ">=1.24.2,<3"
+# gertils v0.8.0's minimum: zarr 3.1, which it requires, needs numpy 1.26.
+numpy = ">=1.26,<3"
 numpydoc_decorator = "^2.2.1"
-pandas = ">=1.5.3,<4"
-scikit-image = ">=0.20.0"
-scipy = "^1.10.1"
+# pandas 2.2.2 and scipy 1.13 are the first releases built for numpy 2, so that none
+# built for numpy 1, which fails to import with numpy 2, can be installed with it.
+pandas = ">=2.2.2,<4"
+# The first release whose remove_small_objects takes max_size, and so later than the
+# first built for numpy 2, 0.23.1.
+scikit-image = ">=0.26.0"
+# The first release built for numpy 2, as pandas 2.2.2 is.
+scipy = "^1.13.0"
 typing-extensions = ">=4.9"
 
 [tool.poetry.group.nox]
@@ -156,10 +162,6 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"spotfishing/__init__.py" = [
-    # The check of the installed versions runs before the imports that would fail.
-    "E402",  # Module level import not at top of file
-]
 "typings/*" = [
     # Stubs copy the signatures of third-party code, which we can't change.
     "FBT001",  # Boolean-typed positional argument in function definition

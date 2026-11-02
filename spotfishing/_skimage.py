@@ -12,7 +12,6 @@ types against scikit-image's own.
 # pyright: reportUnknownVariableType=false
 # pyright: reportUnknownArgumentType=false
 
-import inspect
 from collections.abc import Sequence
 from typing import Any, cast
 
@@ -30,14 +29,6 @@ __all__ = [
     "remove_small_objects",
     "white_tophat",
 ]
-
-# scikit-image 0.26 replaced the min_size of remove_small_objects, which removes the
-# objects smaller than it, by max_size, which removes those no larger than it.
-# spotfishing states the largest size to remove, as max_size does, and before 0.26
-# passes the size above it as min_size.
-_HAS_MAX_SIZE = (
-    "max_size" in inspect.signature(morphology.remove_small_objects).parameters
-)
 
 
 def gaussian(image: npt.NDArray[Any], sigma: float) -> FloatImage:
@@ -66,9 +57,7 @@ def remove_small_objects[ArrayT: npt.NDArray[Any]](
     max_size: int,
 ) -> ArrayT:
     """Remove the labelled objects of the given size or smaller."""
-    if _HAS_MAX_SIZE:
-        return morphology.remove_small_objects(ar, max_size=max_size)
-    return morphology.remove_small_objects(ar, min_size=max_size + 1)
+    return morphology.remove_small_objects(ar, max_size=max_size)
 
 
 def expand_labels[ArrayT: npt.NDArray[Any]](
