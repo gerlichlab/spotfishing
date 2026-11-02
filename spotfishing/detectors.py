@@ -147,7 +147,6 @@ def _build_props_table(
         )
     spot_props = spot_props.rename(
         columns=dict(SPOT_DETECTION_COLUMN_RENAMING),
-        inplace=False,
         errors="raise",
     )
     spot_props = spot_props.reset_index(drop=True)

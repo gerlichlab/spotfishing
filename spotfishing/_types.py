@@ -9,7 +9,7 @@ import numpy.typing as npt
 __author__ = "Vince Reuter"
 __credits__ = ["Vince Reuter"]
 
-__all__ = ["FloatImage", "NumpyInt", "NumpyFloat", "PixelValue"]
+__all__ = ["FloatImage", "NumpyFloat", "NumpyInt", "PixelValue"]
 
 
 Image = npt.NDArray["PixelValue"]

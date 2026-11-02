@@ -23,8 +23,8 @@ __author__ = "Vince Reuter"
 __credits__ = ["Vince Reuter", "Kai Sandoval Beckwith"]
 
 __all__ = [
-    "DifferenceOfGaussiansSpecificationForLooptrace",
     "ORIGINAL_LOOPTRACE_DOG_SPECIFICATION",
+    "DifferenceOfGaussiansSpecificationForLooptrace",
 ]
 
 

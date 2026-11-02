@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "spotfishing"
-version = "0.4.0"
+version = "0.5.0"
 description = "Detecting spots in FISH images"
 authors = [
     "Vince Reuter <vince.reuter@gmail.com>",
@@ -11,7 +11,6 @@ repository = "https://github.com/gerlichlab/spotfishing"
 classifiers = [
     "Development Status :: 1 - Planning",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Topic :: Scientific/Engineering :: Bio-Informatics",    
@@ -25,13 +24,19 @@ include = ["examples"]
 
 [tool.poetry.dependencies]
 # These are the main runtime dependencies.
-python = ">= 3.11, < 3.14"
-gertils = { git = "https://github.com/gerlichlab/gertils.git", tag = "v0.7.0" }
-numpy = ">=1.24.2,<3"
+python = ">= 3.12, < 3.14"
+gertils = { git = "https://github.com/gerlichlab/gertils.git", tag = "v0.8.0" }
+# gertils v0.8.0's minimum: zarr 3.1, which it requires, needs numpy 1.26.
+numpy = ">=1.26,<3"
 numpydoc_decorator = "^2.2.1"
-pandas = ">=1.5.3,<3"
-scikit-image = ">=0.20.0"
-scipy = "^1.10.1"
+# pandas 2.2.2 and scipy 1.13 are the first releases built for numpy 2, so that none
+# built for numpy 1, which fails to import with numpy 2, can be installed with it.
+pandas = ">=2.2.2,<4"
+# The first release whose remove_small_objects takes max_size, and so later than the
+# first built for numpy 2, 0.23.1.
+scikit-image = ">=0.26.0"
+# The first release built for numpy 2, as pandas 2.2.2 is.
+scipy = "^1.13.0"
 typing-extensions = ">=4.9"
 
 [tool.poetry.group.nox]
@@ -54,11 +59,12 @@ optional = true
 [tool.poetry.group.lint.dependencies]
 hypothesis = "^6.68.2"
 # The version looptrace pins, so the two projects are type-checked by the same pyright.
-pyright = "==1.1.411"
+pyright = "==1.1.414"
 nox = "^2022.11.21"
-pandas-stubs = "^2.2.0.240218"
+# Each release of the stubs types one pandas version: here pandas 3, as in the lock.
+pandas-stubs = "^3.0.0"
 pytest = "^7.1.0"
-ruff = "==0.7.4"
+ruff = "==0.17.3"
 # With its scipy extra, scipy-stubs requires the scipy release it describes.
 scipy-stubs = { version = ">=1.15", extras = ["scipy"] }
 
@@ -68,7 +74,7 @@ optional = true
 [tool.poetry.group.format.dependencies]
 codespell = "^2.2.2"
 # The version looptrace pins, so the two projects are formatted and linted by the same ruff.
-ruff = "==0.7.4"
+ruff = "==0.17.3"
 
 [tool.poetry.group.dev]
 optional = true
@@ -78,12 +84,12 @@ optional = true
 # Consider each new dependency to another group as a dev group candidate.
 codespell = "^2.2.2"
 hypothesis = "^6.68.2"
-pyright = "==1.1.411"
+pyright = "==1.1.414"
 nox = "^2022.11.21"
-pandas-stubs = "^2.2.0.240218"
+pandas-stubs = "^3.0.0"
 pytest = "^7.1.0"
 pytest-cov = "^5.0.0"
-ruff = "==0.7.4"
+ruff = "==0.17.3"
 # With its scipy extra, scipy-stubs requires the scipy release it describes.
 scipy-stubs = { version = ">=1.15", extras = ["scipy"] }
 
@@ -106,13 +112,12 @@ reportUnnecessaryTypeIgnoreComment = "error"
 
 [tool.ruff]
 # No line-length: ruff's default of 88, as in the other repositories behind looptrace.
-target-version = "py311"
+target-version = "py312"
 
 [tool.ruff.lint]
 select = ["ALL"]
 ignore = [
     # Missing members
-    "ANN10",  # Deprecated: Missing type annotation for self/cls in (class)method
     "D105",  # Missing docstring in magic method
     "ANN204", # Missing return type annotation for special method
 
@@ -126,12 +131,14 @@ ignore = [
     "D400",  # First line should end with a period
     "D415",  # First line should end with a period, question mark, or exclamation point
     "N818",  # Exception should be named with an Error suffix
+    "CPY001",  # Missing copyright notice at top of file: the LICENSE covers every file
 
     # Imports and type annotations
     "FA100",  # Missing `from __future__ import annotations`, but uses `typing.*`
-    "TCH002",  # Move third-party import `...` into a type-checking block
-    "TCH003",  # Move standard library import `...` into a type-checking block
+    "TC002",  # Move third-party import `...` into a type-checking block
+    "TC003",  # Move standard library import `...` into a type-checking block
     "UP007",  # Use `X | Y` for type annotations
+    "UP045",  # Use `X | None` for type annotations, which ruff split out of UP007
 
     # Ruff recommends avoiding these checks when using `ruff format`. Since
     # `ruff format` is a drop-in replacement for `black`, we avoid the same
@@ -155,10 +162,6 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"spotfishing/__init__.py" = [
-    # The check of the installed versions runs before the imports that would fail.
-    "E402",  # Module level import not at top of file
-]
 "typings/*" = [
     # Stubs copy the signatures of third-party code, which we can't change.
     "FBT001",  # Boolean-typed positional argument in function definition
@@ -169,7 +172,7 @@ ignore = [
     # Ignore some groups of checks in our test code.
     "ANN",  # Type annotations
     "D10",  # Missing docstrings
-    "TCH00",  # Imports and type checking blocks
+    "TC00",  # Imports and type checking blocks
     "INP001", # File `...` is part of an implicit namespace package. Add an `__init__.py`.
 
     # Ignore some more specific checks in our test code.
@@ -177,6 +180,7 @@ ignore = [
     "N802",  # Function name `...` should be lowercase
     "S101",  # Use of `assert` detected
     "PLR0913",  # Too many arguments in function definition: a parametrized test takes one per parameter.
+    "PLR0917",  # Too many positional arguments: likewise, and pytest passes them by name.
     "T201",  # `print` found: pytest shows what a failing test printed, such as the tables it compared.
 ]
 
