@@ -36,7 +36,6 @@ pandas = ">=2.2.2,<4"
 scikit-image = ">=0.26.0"
 # The first release built for numpy 2, as pandas 2.2.2 is.
 scipy = "^1.13.0"
-typing-extensions = ">=4.9"
 
 [tool.poetry.group.nox]
 optional = true

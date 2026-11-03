@@ -1606,4 +1606,4 @@ remote = ["fsspec (>=2023.10.0)", "obstore (>=0.5.1)"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">= 3.12, < 3.14"
-content-hash = "3fecb4003154ffd20f5833546f58d3ac4df103362ddb279a4b3280e7faa3784f"
+content-hash = "5d2521489fa568a8219984483fce5e437a09167dcd75d3bdf9c37f370746362e"
