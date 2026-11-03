@@ -1,13 +1,11 @@
 """Different spot detection implementations"""
 
-from dataclasses import dataclass
-from typing import Annotated, Optional, Union, cast
+from typing import Optional, Union, cast
 
 import numpy as np
 import numpy.typing as npt
 import pandas as pd
 from scipy import ndimage as ndi
-from typing_extensions import Doc
 
 from ._constants import ROI_AREA_KEY, ROI_CENTROID_KEY, ROI_MEAN_INTENSITY_KEY
 from ._exceptions import DimensionalityError
@@ -28,36 +26,13 @@ __all__ = ["detect_spots_dog", "detect_spots_int"]
 Numeric = Union[int, float]
 
 
-@dataclass(frozen=True)
-class detection_signature:  # noqa: N801
-    """Parameter descriptions common to various spot detection procedures."""
-
-    image = Annotated[npt.NDArray[PixelValue], Doc("3D image in which to detect spots")]
-    threshold = Annotated[
-        Numeric,
-        Doc(
-            "The minimum (after any transformations) pixel value required to regard a pixel as part of a spot"
-        ),
-    ]
-    expand_px = Annotated[
-        Optional[Numeric],
-        Doc("The number of pixels by which to expand a detected and defined region"),
-    ]
-    result = Annotated[
-        DetectionResult,
-        Doc(
-            "Bundle of table of ROI coordinates and data, the image used for spot detection, and region labels array"
-        ),
-    ]
-
-
 def detect_spots_dog(
-    input_image: detection_signature.image,
+    input_image: npt.NDArray[PixelValue],
     *,
-    spot_threshold: detection_signature.threshold,
-    expand_px: detection_signature.expand_px,
+    spot_threshold: Numeric,
+    expand_px: Optional[Numeric],
     transform: DifferenceOfGaussiansTransformation,
-) -> detection_signature.result:
+) -> DetectionResult:
     """Detect spots by difference of Gaussians filter.
 
     Parameters
@@ -104,11 +79,11 @@ def detect_spots_dog(
 
 
 def detect_spots_int(
-    input_image: detection_signature.image,
+    input_image: npt.NDArray[PixelValue],
     *,
-    spot_threshold: detection_signature.threshold,
-    expand_px: detection_signature.expand_px,
-) -> detection_signature.result:
+    spot_threshold: Numeric,
+    expand_px: Optional[Numeric],
+) -> DetectionResult:
     """Detect spots by a simple pixel value threshold.
 
     Parameters
