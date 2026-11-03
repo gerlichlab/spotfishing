@@ -6,7 +6,6 @@ from typing import Annotated, Optional, Union, cast
 import numpy as np
 import numpy.typing as npt
 import pandas as pd
-from numpydoc_decorator import doc
 from scipy import ndimage as ndi
 from typing_extensions import Doc
 
@@ -29,9 +28,10 @@ __all__ = ["detect_spots_dog", "detect_spots_int"]
 Numeric = Union[int, float]
 
 
-@doc(summary="Parameter descriptions common to various spot detection procedures")
 @dataclass(frozen=True)
 class detection_signature:  # noqa: N801
+    """Parameter descriptions common to various spot detection procedures."""
+
     image = Annotated[npt.NDArray[PixelValue], Doc("3D image in which to detect spots")]
     threshold = Annotated[
         Numeric,
@@ -51,23 +51,42 @@ class detection_signature:  # noqa: N801
     ]
 
 
-@doc(
-    summary="Detect spots by difference of Gaussians filter.",
-    parameters=dict(
-        transform="The subtraction-after-smoothing parameterisation that defined DoG",
-    ),
-    raises=dict(
-        TypeError="If `input_image` isn't a numpy array, or the given `transform` isn't specifically a `DifferenceOfGaussiansTransformation`",
-        DimensionalityError="If `input_image` isn't 3D",
-    ),
-)
-def detect_spots_dog(  # noqa: D103
+def detect_spots_dog(
     input_image: detection_signature.image,
     *,
     spot_threshold: detection_signature.threshold,
     expand_px: detection_signature.expand_px,
     transform: DifferenceOfGaussiansTransformation,
 ) -> detection_signature.result:
+    """Detect spots by difference of Gaussians filter.
+
+    Parameters
+    ----------
+    input_image : NDArray[uint8 or uint16]
+        3D image in which to detect spots.
+    spot_threshold : int or float
+        The minimum (after any transformations) pixel value required to regard
+        a pixel as part of a spot.
+    expand_px : int or float or None
+        The number of pixels by which to expand a detected and defined region.
+    transform : DifferenceOfGaussiansTransformation
+        The subtraction-after-smoothing parameterisation that defined DoG.
+
+    Returns
+    -------
+    DetectionResult
+        Bundle of table of ROI coordinates and data, the image used for spot
+        detection, and region labels array.
+
+    Raises
+    ------
+    TypeError
+        If `input_image` isn't a numpy array, or the given `transform` isn't
+        specifically a `DifferenceOfGaussiansTransformation`.
+    DimensionalityError
+        If `input_image` isn't 3D.
+
+    """
     # Something from scikit-image, such as skimage.feature.blob_dog, could replace
     # this; see https://github.com/gerlichlab/spotfishing/issues/5
     _check_input_image(input_image)
@@ -84,19 +103,38 @@ def detect_spots_dog(  # noqa: D103
     return DetectionResult(table=spot_props, image=img, labels=labels)
 
 
-@doc(
-    summary="Detect spots by a simple pixel value threshold.",
-    raises=dict(
-        TypeError="If `input_image` isn't a numpy array",
-        DimensionalityError="If `input_image` isn't 3D",
-    ),
-)
-def detect_spots_int(  # noqa: D103
+def detect_spots_int(
     input_image: detection_signature.image,
     *,
     spot_threshold: detection_signature.threshold,
     expand_px: detection_signature.expand_px,
 ) -> detection_signature.result:
+    """Detect spots by a simple pixel value threshold.
+
+    Parameters
+    ----------
+    input_image : NDArray[uint8 or uint16]
+        3D image in which to detect spots.
+    spot_threshold : int or float
+        The minimum (after any transformations) pixel value required to regard
+        a pixel as part of a spot.
+    expand_px : int or float or None
+        The number of pixels by which to expand a detected and defined region.
+
+    Returns
+    -------
+    DetectionResult
+        Bundle of table of ROI coordinates and data, the image used for spot
+        detection, and region labels array.
+
+    Raises
+    ------
+    TypeError
+        If `input_image` isn't a numpy array.
+    DimensionalityError
+        If `input_image` isn't 3D.
+
+    """
     _check_input_image(input_image)
     binary = input_image > spot_threshold
     binary = ndi.binary_fill_holes(binary)

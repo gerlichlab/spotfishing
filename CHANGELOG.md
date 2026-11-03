@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Removed
+* The dependency on numpydoc_decorator, whose newest release allows only Python below 3.14. See [looptrace issue 584](https://github.com/gerlichlab/looptrace/issues/584). Each docstring its `@doc` wrote when a module was imported is now written in the source, reading as before, so ruff's docstring rules check it and an editor shows it. Three summaries that `@doc` wrapped over two lines take one line. `spotfishing._transformation_parameters`, which held parameter descriptions for `@doc` to share, goes, as the docstrings now hold them, and so does the type information for numpydoc_decorator in `typings/`. numpydoc_decorator stays in the lock until gertils drops it too.
+
 ## [v0.5.0] - 2026-11-02
 
 ### Added

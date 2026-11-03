@@ -28,7 +28,6 @@ python = ">= 3.12, < 3.14"
 gertils = { git = "https://github.com/gerlichlab/gertils.git", tag = "v0.8.0" }
 # gertils v0.8.0's minimum: zarr 3.1, which it requires, needs numpy 1.26.
 numpy = ">=1.26,<3"
-numpydoc_decorator = "^2.2.1"
 # pandas 2.2.2 and scipy 1.13 are the first releases built for numpy 2, so that none
 # built for numpy 1, which fails to import with numpy 2, can be installed with it.
 pandas = ">=2.2.2,<4"

@@ -5,8 +5,6 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import TYPE_CHECKING, Union
 
-from numpydoc_decorator import doc
-
 if TYPE_CHECKING:
     import numpy.typing as npt
     import pandas as pd
@@ -53,16 +51,25 @@ SKIMAGE_REGIONPROPS_TABLE_COLUMNS_EXPANDED = [
 DETECTION_RESULT_TABLE_COLUMNS = [new for _, new in SPOT_DETECTION_COLUMN_RENAMING]
 
 
-@doc(
-    summary="The result of applying spot detection to an input image",
-    parameters=dict(
-        table="A table of detected spot coordinates and measurements",
-        image="The image (after possibly some preprocessing) that was actually used in detection",
-        labels="Array of the same size/shape as the image, with nonnegative integer entries; a zero indicates that the pixel isn't in an ROI, and a nonzero indicates the index of the ROI to which the pixel's been assigned",
-    ),
-)
 @dataclass(frozen=True, kw_only=True)
-class DetectionResult:  # noqa: D101
+class DetectionResult:
+    """The result of applying spot detection to an input image.
+
+    Parameters
+    ----------
+    table : pd.DataFrame
+        A table of detected spot coordinates and measurements.
+    image : Union[npt.NDArray[PixelValue], FloatImage]
+        The image (after possibly some preprocessing) that was actually used
+        in detection.
+    labels : npt.NDArray[NumpyInt]
+        Array of the same size/shape as the image, with nonnegative integer
+        entries; a zero indicates that the pixel isn't in an ROI, and a
+        nonzero indicates the index of the ROI to which the pixel's been
+        assigned.
+
+    """
+
     table: "pd.DataFrame"
     image: "Union[npt.NDArray[PixelValue], FloatImage]"
     labels: "npt.NDArray[NumpyInt]"

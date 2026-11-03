@@ -3,7 +3,6 @@
 from collections.abc import Mapping
 
 from gertils.geometry import ImagePoint3D
-from numpydoc_decorator import doc
 from pandas import Series
 
 from .detection_result import RoiCenterKeys
@@ -13,17 +12,28 @@ from .detection_result import RoiCenterKeys
 Record = Series | Mapping[str, object]
 
 
-@doc(
-    summary="Get region centroid from data row.",
-    parameters=dict(rec="The data corresponding to a record from a file."),
-    raises=dict(
-        KeyError="If any of the required keys to parse coordinates isn't present in given row."
-    ),
-    returns="Coordinates which define a point in a 3D image.",
-)
-def get_centroid_from_record(  # noqa: D103
+def get_centroid_from_record(
     rec: Record,
 ) -> ImagePoint3D:
+    """Get region centroid from data row.
+
+    Parameters
+    ----------
+    rec : UnionType[Series, Mapping[str, object]]
+        The data corresponding to a record from a file.
+
+    Returns
+    -------
+    ImagePoint3D
+        Coordinates which define a point in a 3D image.
+
+    Raises
+    ------
+    KeyError
+        If any of the required keys to parse coordinates isn't present in
+        given row.
+
+    """
     return ImagePoint3D(
         z=rec[RoiCenterKeys.Z.value],  # pyright: ignore[reportArgumentType]
         y=rec[RoiCenterKeys.Y.value],  # pyright: ignore[reportArgumentType]
