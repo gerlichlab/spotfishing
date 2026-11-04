@@ -7,8 +7,8 @@ from pandas import Series
 
 from .detection_result import RoiCenterKeys
 
-# A plain assignment, not a `type` statement: it stays the union at run time, so the
-# generated docs name the types a record may have, and typing.get_args finds them.
+# A plain assignment, not a `type` statement: at run time it stays the union, as it
+# was in v0.4.1, so typing.get_args finds the types a record may have.
 Record = Series | Mapping[str, object]
 
 
