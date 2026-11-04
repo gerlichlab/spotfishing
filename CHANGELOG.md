@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 * The documentation gives each parameter's type by a short name, such as `NDArray[uint8 or uint16]`, `float or int` or `callable`, where `@doc` wrote out its annotation, private aliases included, such as `Union[npt.NDArray[PixelValue], FloatImage]`. The classes' documentation no longer has a Returns section saying that the class returns None.
 * The documentation of `DifferenceOfGaussiansTransformation` says that `post_diff` is called with the images by name, as `old_img` and `new_img`, where it said they were its first and second arguments. Two typos in its description are gone.
+* The error for a `DifferenceOfGaussiansTransformation` whose sigma isn't a number closes the parenthesis around the wide sigma's type, which it left open.
 
 ## [v0.5.0] - 2026-11-02
 

@@ -68,7 +68,7 @@ class DifferenceOfGaussiansTransformation:
         # skimage raises errors for negative sigma, but we raise these.
         if not (is_numeric(self.sigma_narrow) and is_numeric(self.sigma_wide)):
             raise TypeError(
-                f"At least one sigma is non-numeric! narrow={self.sigma_narrow} ({type(self.sigma_narrow).__name__}), wide={self.sigma_wide} ({type(self.sigma_wide).__name__}"
+                f"At least one sigma is non-numeric! narrow={self.sigma_narrow} ({type(self.sigma_narrow).__name__}), wide={self.sigma_wide} ({type(self.sigma_wide).__name__})"
             )
         if self.sigma_narrow >= self.sigma_wide:
             raise ValueError(
