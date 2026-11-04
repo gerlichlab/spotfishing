@@ -19,7 +19,7 @@ def get_centroid_from_record(
 
     Parameters
     ----------
-    rec : UnionType[Series, Mapping[str, object]]
+    rec : Series or Mapping[str, object]
         The data corresponding to a record from a file.
 
     Returns

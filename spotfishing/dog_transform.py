@@ -24,36 +24,29 @@ class PostDifferenceTransformation(Protocol):
 class DifferenceOfGaussiansTransformation:
     """Bundle of parameters defining preprocessing for Difference of Gaussians (DoG) detector.
 
-    Chain together a series of operations that to prepare an image for spot
+    Chain together a series of operations to prepare an image for spot
     detection by difference of Gaussians. This includes an optional step to
     do before taking the difference of Gaussian-smoothed images, the spreads
     of the Gaussians to use for the smoothing, and what (if anything) to do
-    after subtracting the smoothed versions of the image,.
+    after subtracting the smoothed versions of the image.
 
     Parameters
     ----------
-    pre_diff : Callable[[NDArray['PixelValue']], NDArray[PixelValue]] or None
+    pre_diff : callable or None
         Transformation to apply to image before taking difference of smoothed
         versions.
-    sigma_narrow : float or int or float16 or float32 or float64 or int8 or int16 or int32 or int64
+    sigma_narrow : float or int, Python's or numpy's
         Standard deviation of the more concentrated of the two smoothing
         distributions.
-    sigma_wide : float or int or float16 or float32 or float64 or int8 or int16 or int32 or int64
+    sigma_wide : float or int, Python's or numpy's
         Standard deviation of the more diffuse of the two smoothing
         distributions.
-    post_diff : PostDifferenceTransformation or None
+    post_diff : callable or None
         What (if anything) to do to the transformed image after difference but
-        before standardisation; note that if non-null, this will be fed the
-        *original* image as the first argument, and the *transformed image as
-        the second argument.
+        before standardisation; if given, it's called with the *original* image
+        as `old_img` and the *transformed* image as `new_img`.
     standardise : bool
         Standardise (mean-0 and spread-1) the image.
-
-    Returns
-    -------
-    None
-        A structure of the same shape as the input, just with all
-        transformations applied.
 
     Raises
     ------
@@ -91,12 +84,12 @@ class DifferenceOfGaussiansTransformation:
 
         Parameters
         ----------
-        input_image : NDArray[PixelValue]
+        input_image : NDArray[uint8 or uint16]
             The image (array of pixel values) to preprocess.
 
         Returns
         -------
-        NDArray[floating[Any]]
+        NDArray[floating]
             The array of values after transformations' application.
 
         """

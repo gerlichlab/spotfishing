@@ -43,17 +43,11 @@ class DifferenceOfGaussiansSpecificationForLooptrace:
     sigma_wide : float or int
         Standard deviation of the more diffuse of the two smoothing
         distributions.
-    sigma_post_divide : int or float or None
+    sigma_post_divide : float or int or None
         The standard deviation of the Gaussian blur to apply after
         differencing but before potential standardisation.
     standardise : bool
         Standardise (mean-0 and spread-1) the image.
-
-    Returns
-    -------
-    None
-        A parameterised instance built according to the specification of the
-        arguments provided here.
 
     Raises
     ------
@@ -138,10 +132,10 @@ def div_by_gauss(*, old_img: Image, new_img: FloatImage, sigma: Numeric) -> Floa
 
     Parameters
     ----------
-    old_img : NDArray[PixelValue]
+    old_img : NDArray[uint8 or uint16]
         The original input image to some transformation, to blur and then use
         as divisor for other image.
-    new_img : NDArray[floating[Any]]
+    new_img : NDArray[floating]
         The image undergoing transformation, to divide by a blurred version of
         the other image.
     sigma : float or int
@@ -149,7 +143,7 @@ def div_by_gauss(*, old_img: Image, new_img: FloatImage, sigma: Numeric) -> Floa
 
     Returns
     -------
-    NDArray[floating[Any]]
+    NDArray[floating]
         The transformed image.
 
     """

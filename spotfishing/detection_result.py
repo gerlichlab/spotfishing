@@ -57,12 +57,12 @@ class DetectionResult:
 
     Parameters
     ----------
-    table : pd.DataFrame
+    table : DataFrame
         A table of detected spot coordinates and measurements.
-    image : Union[npt.NDArray[PixelValue], FloatImage]
+    image : NDArray[uint8 or uint16] or NDArray[floating]
         The image (after possibly some preprocessing) that was actually used
         in detection.
-    labels : npt.NDArray[NumpyInt]
+    labels : NDArray[signedinteger]
         Array of the same size/shape as the image, with nonnegative integer
         entries; a zero indicates that the pixel isn't in an ROI, and a
         nonzero indicates the index of the ROI to which the pixel's been
