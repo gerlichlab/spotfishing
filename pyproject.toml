@@ -13,6 +13,7 @@ classifiers = [
     "Programming Language :: Python",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Scientific/Engineering :: Bio-Informatics",    
     "Typing :: Typed",
 ]
@@ -24,18 +25,18 @@ include = ["examples"]
 
 [tool.poetry.dependencies]
 # These are the main runtime dependencies.
-python = ">= 3.12, < 3.14"
-gertils = { git = "https://github.com/gerlichlab/gertils.git", tag = "v0.8.0" }
-# gertils v0.8.0's minimum: zarr 3.1, which it requires, needs numpy 1.26.
-numpy = ">=1.26,<3"
-# pandas 2.2.2 and scipy 1.13 are the first releases built for numpy 2, so that none
-# built for numpy 1, which fails to import with numpy 2, can be installed with it.
+python = ">= 3.12, < 3.15"
+gertils = { git = "https://github.com/gerlichlab/gertils.git", tag = "v0.9.0" }
+# gertils v0.9.0's minimum: the first numpy release with wheels for Python 3.14.
+numpy = ">=2.3.2,<3"
+# The first release built for numpy 2, so that none built for numpy 1, which fails to
+# import with numpy 2, can be installed with it.
 pandas = ">=2.2.2,<4"
 # The first release whose remove_small_objects takes max_size, and so later than the
 # first built for numpy 2, 0.23.1.
 scikit-image = ">=0.26.0"
-# The first release built for numpy 2, as pandas 2.2.2 is.
-scipy = "^1.13.0"
+# The first release that allows numpy 2.3: 1.13 and 1.14 require numpy below 2.3.
+scipy = "^1.15.0"
 
 [tool.poetry.group.nox]
 optional = true

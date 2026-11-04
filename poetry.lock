@@ -323,25 +323,24 @@ tqdm = ["tqdm"]
 
 [[package]]
 name = "gertils"
-version = "0.8.0"
+version = "0.9.0"
 description = "General computing utilities for data processing and analysis in the Gerlich group at IMBA"
 optional = false
-python-versions = ">=3.12,<3.14"
+python-versions = ">=3.12,<3.15"
 groups = ["main"]
 files = []
 develop = false
 
 [package.dependencies]
-dask = ">=2023.5.1"
-numpy = ">=1.26,<3"
-numpydoc_decorator = "^2.2.1"
+dask = ">=2023.6.1"
+numpy = ">=2.3.2,<3"
 zarr = ">=3.1,<4"
 
 [package.source]
 type = "git"
 url = "https://github.com/gerlichlab/gertils.git"
-reference = "v0.8.0"
-resolved_reference = "386d6bc0150fde88f4ad3ad09d37805c32b62aec"
+reference = "v0.9.0"
+resolved_reference = "1188706a31fe8d4af8cfcebade5f4fa71c4c5d02"
 
 [[package]]
 name = "google-crc32c"
@@ -785,21 +784,6 @@ files = [
 numpy = ">=2.5rc1,<2.6"
 
 [[package]]
-name = "numpydoc-decorator"
-version = "2.3.0"
-description = ""
-optional = false
-python-versions = "<3.14,>=3.10"
-groups = ["main"]
-files = [
-    {file = "numpydoc_decorator-2.3.0-py3-none-any.whl", hash = "sha256:042bcffbcf89a120d4660f1204227dd9b597e66df5f0fd108d0bff060727d498"},
-    {file = "numpydoc_decorator-2.3.0.tar.gz", hash = "sha256:bc097eefe88975e410098c23e699de227d8df2972d8299a73538ad269b85a046"},
-]
-
-[package.dependencies]
-typing_extensions = "*"
-
-[[package]]
 name = "optype"
 version = "0.19.0"
 description = "Building Blocks for Precise & Flexible Type Hints"
@@ -900,7 +884,10 @@ files = [
 ]
 
 [package.dependencies]
-numpy = {version = ">=2.0.2", markers = "python_version < \"3.14\""}
+numpy = [
+    {version = ">=2.0.2", markers = "python_version < \"3.14\""},
+    {version = ">=2.3.3", markers = "python_version >= \"3.14\""},
+]
 python-dateutil = ">=2.9.0"
 tzdata = {version = "*", markers = "sys_platform == \"win32\" or sys_platform == \"emscripten\""}
 
@@ -1605,5 +1592,5 @@ remote = ["fsspec (>=2023.10.0)", "obstore (>=0.5.1)"]
 
 [metadata]
 lock-version = "2.1"
-python-versions = ">= 3.12, < 3.14"
-content-hash = "5d2521489fa568a8219984483fce5e437a09167dcd75d3bdf9c37f370746362e"
+python-versions = ">= 3.12, < 3.15"
+content-hash = "0b9b3145fc6940c915d63298f11bc39a886a9487f728b76c2f8bad9aa2d8b1f2"

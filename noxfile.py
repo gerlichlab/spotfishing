@@ -7,7 +7,7 @@ from pathlib import Path
 import nox
 import nox.virtualenv
 
-PYTHON_VERSIONS = ["3.12", "3.13"]
+PYTHON_VERSIONS = ["3.12", "3.13", "3.14"]
 PACKAGE_NAME = "spotfishing"
 
 
