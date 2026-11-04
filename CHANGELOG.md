@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.6.0] - 2026-11-04
+
+### Added
+* Support for Python 3.14: spotfishing requires Python 3.12 to 3.14, as gertils v0.9.0 does. CI tests, lints and checks the format on all three, the nox test and lint sessions run on all three, and the Nix shell has Python 3.14 beside 3.13 for nox.
+
+### Changed
+* Depend on `gertils` v0.9.0, which no longer depends on numpydoc_decorator and allows Python 3.14. The minimum numpy is 2.3.2, as gertils v0.9.0's is: the first numpy release with wheels for Python 3.14. That rules out scipy 1.13 and 1.14, which require numpy below 2.3, so the minimum scipy is 1.15.0. With the minimums, numpy 2.3.2, pandas 2.2.2, scipy 1.15.0 and scikit-image 0.26.0, the tests pass on Python 3.12. The lock has numpy 2.5.4 already, and nothing else in it changes.
+
+### Removed
+* The dependency on numpydoc_decorator, whose newest release allows only Python below 3.14. See [looptrace issue 584](https://github.com/gerlichlab/looptrace/issues/584). Each docstring its `@doc` wrote when a module was imported is now written in the source, so an editor shows it. As `@doc` did, ruff's docstring rules check that each function documents its parameters, and a test that each dataclass documents its fields. Three summaries that `@doc` wrapped over two lines take one line. `spotfishing._transformation_parameters`, which held parameter descriptions for `@doc` to share, goes, as the docstrings now hold them, and so does the type information for numpydoc_decorator in `typings/`. `spotfishing.detectors.detection_signature` goes too: it held the detectors' parameter descriptions as `Doc` annotations, which `@doc` took out of their signatures. The detectors now name the types it held, so their signatures, as `help()` and `inspect.signature` show them, are as before. With gertils v0.9.0, which drops it too, it leaves the lock.
+* The dependency on `typing-extensions`, declared because spotfishing imported it (#18): only `detection_signature` did. zarr, which gertils requires, still installs it.
+
+### Fixed
+* The documentation gives each parameter's type by a short name, such as `NDArray[uint8 or uint16]`, `float or int` or `callable`, where `@doc` wrote out its annotation, private aliases included, such as `Union[npt.NDArray[PixelValue], FloatImage]`. The classes' documentation no longer has a Returns section saying that the class returns None.
+* The documentation of `DifferenceOfGaussiansTransformation` says that `post_diff` is called with the images by name, as `old_img` and `new_img`, where it said they were its first and second arguments. Two typos in its description are gone.
+* The error for a `DifferenceOfGaussiansTransformation` whose sigma isn't a number closes the parenthesis around the wide sigma's type, which it left open.
+
 ## [v0.5.0] - 2026-11-02
 
 ### Added

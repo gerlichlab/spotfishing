@@ -3,27 +3,37 @@
 from collections.abc import Mapping
 
 from gertils.geometry import ImagePoint3D
-from numpydoc_decorator import doc
 from pandas import Series
 
 from .detection_result import RoiCenterKeys
 
-# A plain assignment, not a `type` statement: it stays the union at run time, so the
-# generated docs name the types a record may have, and typing.get_args finds them.
+# A plain assignment, not a `type` statement: at run time it stays the union, as it
+# was in v0.4.1, so typing.get_args finds the types a record may have.
 Record = Series | Mapping[str, object]
 
 
-@doc(
-    summary="Get region centroid from data row.",
-    parameters=dict(rec="The data corresponding to a record from a file."),
-    raises=dict(
-        KeyError="If any of the required keys to parse coordinates isn't present in given row."
-    ),
-    returns="Coordinates which define a point in a 3D image.",
-)
-def get_centroid_from_record(  # noqa: D103
+def get_centroid_from_record(
     rec: Record,
 ) -> ImagePoint3D:
+    """Get region centroid from data row.
+
+    Parameters
+    ----------
+    rec : Series or Mapping[str, object]
+        The data corresponding to a record from a file.
+
+    Returns
+    -------
+    ImagePoint3D
+        Coordinates which define a point in a 3D image.
+
+    Raises
+    ------
+    KeyError
+        If any of the required keys to parse coordinates isn't present in
+        given row.
+
+    """
     return ImagePoint3D(
         z=rec[RoiCenterKeys.Z.value],  # pyright: ignore[reportArgumentType]
         y=rec[RoiCenterKeys.Y.value],  # pyright: ignore[reportArgumentType]
