@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [v0.6.0] - 2026-11-04
 
 ### Added
 * Support for Python 3.14: spotfishing requires Python 3.12 to 3.14, as gertils v0.9.0 does. CI tests, lints and checks the format on all three, the nox test and lint sessions run on all three, and the Nix shell has Python 3.14 beside 3.13 for nox.
